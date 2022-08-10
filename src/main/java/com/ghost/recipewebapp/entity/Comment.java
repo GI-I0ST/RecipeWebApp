@@ -24,11 +24,6 @@ public class Comment{
     @Column(name = "text")
     private String text;
 
-    @Column(name = "rating")
-    @Min(1)
-    @Max(5)
-    private int rating;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

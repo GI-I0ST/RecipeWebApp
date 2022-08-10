@@ -1,5 +1,6 @@
-package com.ghost.recipewebapp;
+package com.ghost.recipewebapp.config;
 
+import com.ghost.recipewebapp.RecipeWebAppApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 

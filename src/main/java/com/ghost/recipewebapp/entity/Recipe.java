@@ -42,11 +42,6 @@ public class Recipe{
     @NotBlank
     private String ingredients;
 
-    @Column(name = "rating")
-    @Min(1)
-    @Max(5)
-    private float rating;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -57,7 +52,7 @@ public class Recipe{
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy
-    private List<Step> stepList = new ArrayList<>();
+    private List<Step> stepsList = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
