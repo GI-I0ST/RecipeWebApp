@@ -1,5 +1,6 @@
 package com.ghost.recipewebapp.controller;
 
+import com.ghost.recipewebapp.entity.Comment;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
