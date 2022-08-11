@@ -1,5 +1,6 @@
 package com.ghost.recipewebapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -19,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    @ToString.Exclude
+    @JsonIgnore
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -37,14 +38,14 @@ public class User {
     private String name;
 
     @OneToMany(mappedBy = "user")
-    @ToString.Exclude
+    @JsonIgnore
     private List<Recipe> recipes = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "users_recipes",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "recipes_id"))
-    @ToString.Exclude
+    @JsonIgnore
     private Set<Recipe> savedRecipes = new LinkedHashSet<>();
 
     @Override

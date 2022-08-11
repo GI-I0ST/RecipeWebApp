@@ -1,11 +1,10 @@
 package com.ghost.recipewebapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.Objects;
 
 @Getter
@@ -18,7 +17,7 @@ public class Comment{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    @ToString.Exclude
+    @JsonIgnore
     private Long id;
 
     @Column(name = "text")
@@ -30,6 +29,7 @@ public class Comment{
 
     @ManyToOne
     @JoinColumn(name = "recipe_id")
+    @JsonIgnore
     private Recipe recipe;
 
     @Override
