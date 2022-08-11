@@ -19,7 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "recipes")
-public class Recipe{
+public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -45,9 +45,11 @@ public class Recipe{
 
     //delete cascade in deploy
     //!!! only for testing
+    /*
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    */
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @Valid

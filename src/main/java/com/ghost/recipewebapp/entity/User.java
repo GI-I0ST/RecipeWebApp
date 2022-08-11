@@ -37,6 +37,7 @@ public class User {
     @NotBlank
     private String name;
 
+    /*
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Recipe> recipes = new ArrayList<>();
@@ -47,6 +48,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "recipes_id"))
     @JsonIgnore
     private Set<Recipe> savedRecipes = new LinkedHashSet<>();
+     */
 
     @Override
     public boolean equals(Object o) {

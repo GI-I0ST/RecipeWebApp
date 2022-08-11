@@ -1,8 +1,9 @@
-package com.ghost.recipewebapp.service;
+package com.ghost.recipewebapp.service.impl;
 
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.repository.RecipeRepository;
+import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,14 +21,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Long addNewRecipe(Recipe newRecipe) {
-        //!!!for test only
-        User testUser = new User();
-        testUser.setName("user1");
-        testUser.setEmail("user1@gmail.com");
-        testUser.setPassword("12345678");
-
         //may be improved
-        newRecipe.setUser(testUser);
+        //newRecipe.setUser(testUser);
         newRecipe.getStepsList().forEach(step -> {
             step.setRecipe(newRecipe);
         });
@@ -51,7 +46,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         //may be improved
-        newRecipe.setUser(oldRecipe.getUser());
+        //newRecipe.setUser(oldRecipe.getUser());
 
         newRecipe.setCommentsList(oldRecipe.getCommentsList());
         newRecipe.getStepsList().forEach(step -> step.setRecipe(newRecipe));

@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Getter
@@ -21,11 +22,14 @@ public class Comment{
     private Long id;
 
     @Column(name = "text")
+    @NotBlank
     private String text;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    */
 
     @ManyToOne
     @JoinColumn(name = "recipe_id")
