@@ -1,7 +1,6 @@
 package com.ghost.recipewebapp.service.impl;
 
 import com.ghost.recipewebapp.entity.Recipe;
-import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;

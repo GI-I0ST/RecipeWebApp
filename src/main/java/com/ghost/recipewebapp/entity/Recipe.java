@@ -8,7 +8,6 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +34,7 @@ public class Recipe {
     private String title;
 
     @Column(name = "time")
-    private LocalTime time;
+    private int time;
 
     @Column(name = "calories")
     private int calories;
