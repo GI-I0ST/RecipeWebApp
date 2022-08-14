@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipe</title>
+</head>
+<body>
+
+<div class="recipe_full" th:object="${recipe}">
+    <div>
+        <h3>title:</h3>
+        <h3 th:text="*{title}">
+            title for recipe
+        </h3>
+    </div>
+    <div th:if=" *{image}">
+        <p>image:</p>
+        <p th:text="*{image}">image for recipe</p>
+    </div>
+    <div th:if="*{time}">
+        <p>time:</p>
+        <p th:text="*{time}">time for recipe</p>
+    </div>
+    <div th:if="*{calories}">
+        <p>calories:</p>
+        <p th:text="*{calories}">calories for recipe</p>
+    </div>
+    <div>
+        <p>ingredients:</p>
+        <p th:text="*{ingredients}">ingredients for recipe</p>
+    </div>
+    <div>
+        <p>steps:</p>
+        <p th:text="*{stepsList}">steps for recipe</p>
+    </div>
+    <div>
+        <p>comments:</p>
+        <p th:text="*{commentsList}">comments for recipe</p>
+    </div>
+</div>
+
+</body>
+</html>

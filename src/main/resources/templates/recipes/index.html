@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipes</title>
+</head>
+<body>
+<div class="recipes_list" th:fragment="recipesList(recipes)">
+    <div class="recipe_short" th:each="recipe : ${recipes}">
+        <div>
+            <h3>title:</h3>
+            <h3>
+                <a th:href="@{'/recipe/' + ${recipe.id}}" th:text="${recipe.title}">title for recipe</a>
+            </h3>
+        </div>
+        <div th:if="${recipe.image}">
+            <p>image:</p>
+            <p th:text="${recipe.image}">image for recipe</p>
+        </div>
+        <div th:if="${recipe.time}">
+            <p>time:</p>
+            <p th:text="${recipe.time}">time for recipe</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
