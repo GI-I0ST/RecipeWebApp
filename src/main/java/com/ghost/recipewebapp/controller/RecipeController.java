@@ -34,13 +34,13 @@ public class RecipeController {
     @GetMapping("/new")
     public String getRecipeCreationForm(Model model) {
         model.addAttribute("recipe", new Recipe());
-        return null;
+        return "recipes/recipeForm";
     }
 
     @PostMapping("/new")
-    public ResponseEntity<?> addNewRecipe(@RequestBody @Valid Recipe newRecipe) {
+    public String addNewRecipe(@ModelAttribute("recipe") Recipe newRecipe) {
         Long id = recipeService.addNewRecipe(newRecipe);
-        return new ResponseEntity<>(Map.of("id", id), HttpStatus.OK);
+        return "redirect:/recipe/" + id;
     }
 
     @PutMapping("/{id}")

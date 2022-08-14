@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Recipe Form</title>
 </head>
 <body>
-$END$
+<form th:method="POST" th:action="@{/recipe/new}" th:object="${recipe}">
+    <div>
+        <label for="recipe_form_title">title</label>
+        <input type="text" th:field="*{title}" id="recipe_form_title"/>
+
+        <br/>
+
+        <label for="recipe_form_image">image</label>
+        <input type="text" th:field="*{image}" id="recipe_form_image"/>
+
+        <br/>
+
+        <label for="recipe_form_time">time</label>
+        <input type="number" inputmode="numeric" min="0" value="30" th:field="*{time}" id="recipe_form_time"/>
+
+        <br/>
+
+        <label for="recipe_form_calories">calories</label>
+        <input type="number" inputmode="numeric" min="0" th:value="${30}" th:field="*{calories}" id="recipe_form_calories"/>
+
+        <br/>
+
+        <label for="recipe_form_ingredients">ingredients</label>
+        <input type="text" th:field="*{ingredients}" id="recipe_form_ingredients"/>
+
+        <br/>
+
+        <p>Step 1:</p>
+        <input type="text" th:field="*{stepsList[0].text}"/>
+
+        <br/>
+
+        <input type="submit" value="create">
+    </div>
+</form>
+
 </body>
 </html>
