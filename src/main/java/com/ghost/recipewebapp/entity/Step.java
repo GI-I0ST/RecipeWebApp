@@ -24,20 +24,24 @@ public class Step {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
+    @ToString.Exclude
     private Long id;
 
     @Column(name = "text")
     @NotBlank
     private String text;
 
+    //images for step
     @ElementCollection
     @Column(name = "image")
     @CollectionTable(name = "step_images", joinColumns = @JoinColumn(name = "step_id"))
     private List<String> imageList = new ArrayList<>();
 
+    //parent
     @ManyToOne
     @JoinColumn(name = "recipe_id")
     @JsonIgnore
+    @ToString.Exclude
     private Recipe recipe;
 
     @Override

@@ -19,6 +19,7 @@ public class Comment{
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private Long id;
 
     @Column(name = "text")
@@ -34,6 +35,7 @@ public class Comment{
     @ManyToOne
     @JoinColumn(name = "recipe_id")
     @JsonIgnore
+    @ToString.Exclude
     private Recipe recipe;
 
     @Override

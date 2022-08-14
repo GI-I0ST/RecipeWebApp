@@ -21,6 +21,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)

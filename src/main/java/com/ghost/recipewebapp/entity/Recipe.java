@@ -24,6 +24,7 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private Long id;
 
     @Column(name = "image")
@@ -51,14 +52,18 @@ public class Recipe {
     private User user;
     */
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Valid
-    private List<Comment> commentsList = new ArrayList<>();
-
+    //steps to cook
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @Size(min = 1)
     @Valid
     private List<Step> stepsList = new ArrayList<>();
+
+
+    //comments to recipe
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Valid
+    private List<Comment> commentsList = new ArrayList<>();
+
 
     @Override
     public boolean equals(Object o) {
