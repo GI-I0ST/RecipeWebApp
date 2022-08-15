@@ -22,8 +22,6 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Long addNewRecipe(Recipe newRecipe) {
-        //may be improved
-        //newRecipe.setUser(testUser);
         newRecipe.getStepsList().forEach(step -> {
             step.setRecipe(newRecipe);
         });
@@ -50,9 +48,6 @@ public class RecipeServiceImpl implements RecipeService {
     public void editRecipe(Recipe newRecipe) {
         Recipe oldRecipe = recipeRepository.findById(newRecipe.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        //may be improved
-        //newRecipe.setUser(oldRecipe.getUser());
 
         newRecipe.setCommentsList(oldRecipe.getCommentsList());
         newRecipe.getStepsList().forEach(step -> step.setRecipe(newRecipe));

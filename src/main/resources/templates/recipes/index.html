@@ -10,7 +10,7 @@
         <div>
             <h3>title:</h3>
             <h3>
-                <a th:href="@{'/recipe/' + ${recipe.id}}" th:text="${recipe.title}">title for recipe</a>
+                <a th:href="@{'/recipes/' + ${recipe.id}}" th:text="${recipe.title}">title for recipe</a>
             </h3>
         </div>
         <div th:if="${recipe.image}">

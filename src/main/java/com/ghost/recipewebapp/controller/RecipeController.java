@@ -3,17 +3,12 @@ package com.ghost.recipewebapp.controller;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.Map;
-
 @Controller
-@RequestMapping("/recipe")
+@RequestMapping("/recipes")
 public class RecipeController {
     @Autowired
     private RecipeService recipeService;
@@ -40,19 +35,27 @@ public class RecipeController {
     @PostMapping("/new")
     public String addNewRecipe(@ModelAttribute("recipe") Recipe newRecipe) {
         Long id = recipeService.addNewRecipe(newRecipe);
-        return "redirect:/recipe/" + id;
+        return "redirect:/recipes/" + id;
+    }
+
+    @GetMapping("/{id}/edit")
+    public String getRecipeEditForm(@PathVariable Long id, Model model) {
+        Recipe recipe = recipeService.getRecipeById(id);
+        model.addAttribute("recipe", recipe);
+
+        return "recipes/recipeForm";
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editRecipe(@PathVariable Long id, @RequestBody @Valid Recipe newRecipe) {
+    public String editRecipe(@PathVariable Long id, @ModelAttribute("recipe") Recipe newRecipe) {
         newRecipe.setId(id);
         recipeService.editRecipe(newRecipe);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return "redirect:/recipes/" + id;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRecipeById(@PathVariable Long id) {
+    public String deleteRecipeById(@PathVariable Long id) {
         recipeService.deleteRecipeById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return "redirect:/recipes";
     }
 }
