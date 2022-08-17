@@ -3,34 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <title>Recipe Form</title>
+    <link th:rel="stylesheet" th:href="@{/assets//bootstrap/css/bootstrap.min.css} "/>
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/assets/jquery/jquery-3.6.0.min.js}"></script>
 </head>
 <body>
+
 <form id="recipe_form"
       th:method="((${recipe.id}) ? 'PUT' : 'POST')"
       th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"
-      th:object="${recipe}">
+      th:modelAttribute>
 
-    <label for="recipe_form_title">title</label>
-    <input type="text" th:field="*{title}" id="recipe_form_title"/>
+    <div class="mb-3">
+        <label for="recipe_form_title" class="form-label">title</label>
+        <input type="text" th:field="${recipe.title}" id="recipe_form_title" class="form-control"/>
+    </div>
 
-    <label for="recipe_form_image">image</label>
-    <input type="text" th:field="*{image}" id="recipe_form_image"/>
+    <div class="mb-3">
+        <label for="recipe_form_image" class="form-label">image</label>
+        <input type="text" th:field="${recipe.image}" id="recipe_form_image" class="form-control"/>
+    </div>
 
-    <label for="recipe_form_time">time</label>
-    <input type="number" inputmode="numeric" min="0" value="30" th:field="*{time}" id="recipe_form_time"/>
+    <div class="mb-3">
+        <label for="recipe_form_time" class="form-label">time</label>
+        <input type="number" inputmode="numeric" min="0" value="30" th:field="${recipe.time}" id="recipe_form_time"
+               class="form-control"/>
+    </div>
 
-    <label for="recipe_form_calories">calories</label>
-    <input type="number" inputmode="numeric" min="0" th:value="${30}" th:field="*{calories}" id="recipe_form_calories"/>
+    <div class="mb-3">
+        <label for="recipe_form_calories" class="form-label">calories</label>
+        <input type="number" inputmode="numeric" min="0" th:field="${recipe.calories}"
+               id="recipe_form_calories" class="form-control"/>
+    </div>
 
-    <label for="recipe_form_ingredients">ingredients</label>
-    <input type="text" th:field="*{ingredients}" id="recipe_form_ingredients"/>
+    <div class="mb-3">
+        <label for="recipe_form_ingredients" class="form-label">ingredients</label>
+        <input type="text" th:field="${recipe.ingredients}" id="recipe_form_ingredients" class="form-control"/>
+    </div>
 
-    <p>Step 1:</p>
-    <input id="recipe_form_submit" type="text" th:field="*{stepsList[0].text}"/>
+    <div id="recipe_form_steps">
+        <th:block th:each="step, iStat : ${recipe.stepsList}">
+            <div class="mb-3 recipe_step">
+                <p class="step_direction" th:text="|Step ${iStat.count}|">Step:</p>
+                <button type="button" class="btn btn-danger delete_step_button">-</button>
+                <input type="text" th:value="${step.text}" th:name="|stepsList[${iStat.index}].text|" class="form-control"/>
+            </div>
+        </th:block>
 
-    <input type="submit" value="create">
+        <div class="mb-3">
+            <button type="button" id="recipe_form_add_step" class="btn btn-primary">Add step</button>
+        </div>
+    </div>
 
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
 </form>
 
+<script>
+    $(document).ready(function () {
+        let step_list_size = [[${recipe.stepsList.size()}]]
+
+        function remove_step(event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            step_list_size--;
+            $(this).parent().remove();
+
+            $(".step_direction").get().forEach(function (step, index) {
+                step.innerHTML = "Step " + (index + 1) + ":";
+            });
+        }
+
+        function add_step(event) {
+            step_list_size++;
+
+            $('#recipe_form_add_step').before("<div class=\"mb-3 recipe_step\">\n" +
+                "            <p class=\"step_direction\">Step " + step_list_size + ":</p>\n" +
+                "            <input type=\"text\" name=\"stepsList[" + (step_list_size - 1) + "].text\" class=\"form-control\"/>" +
+                "            <button type=\"button\" class=\"btn btn-danger delete_step_button\">-</button>\n" +
+                "        </div>");
+
+            $('.recipe_step:last').children(".delete_step_button").on("click", remove_step);
+        }
+
+        $('#recipe_form_add_step').on("click", add_step);
+
+        $('.delete_step_button').on("click", remove_step);
+    });
+</script>
 </body>
 </html>
