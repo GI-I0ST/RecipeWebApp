@@ -3,11 +3,13 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'java'
     id 'war'
+    id 'application'
 }
 
 group = 'com.ghost'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+mainClassName = 'com.ghost.recipewebapp.RecipeWebAppApplication'
 
 configurations {
     compileOnly {
@@ -35,7 +37,7 @@ dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    compileOnly 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.11.0'
 }
 
 tasks.named('test') {

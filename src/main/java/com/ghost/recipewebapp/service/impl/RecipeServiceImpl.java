@@ -6,6 +6,7 @@ import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.service.RecipeService;
 import com.ghost.recipewebapp.util.FileLoader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,19 +16,22 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@ComponentScan("com.ghost.util")
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
+    private final FileLoader fileLoader;
 
     @Autowired
-    public RecipeServiceImpl(RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, FileLoader fileLoader) {
         this.recipeRepository = recipeRepository;
+        this.fileLoader = fileLoader;
     }
 
     private void uploadImage(AbstractMultipartImageEntity imageEntity) {
         MultipartFile imageMultipart = imageEntity.getImageMultipart();
 
         if (Objects.nonNull(imageMultipart) && !imageMultipart.isEmpty()) {
-            String imgName = FileLoader.uploadFile(imageMultipart);
+            String imgName = fileLoader.uploadFile(imageMultipart);
             imageEntity.setImage(imgName);
         }
     }
@@ -36,7 +40,7 @@ public class RecipeServiceImpl implements RecipeService {
         String imgName = imageEntity.getImage();
 
         if (Objects.nonNull(imgName) && !imgName.isBlank()) {
-            FileLoader.deleteFile(imgName);
+            fileLoader.deleteFile(imgName);
             imageEntity.setImage(null);
         }
     }

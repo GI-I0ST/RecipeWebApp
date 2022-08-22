@@ -1,21 +1,38 @@
 package com.ghost.recipewebapp.util;
 
+import com.ghost.recipewebapp.exception.EnvVarNotFoundException;
 import com.ghost.recipewebapp.exception.FileUploadException;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.UUID;
 
+@Component
 public class FileLoader {
 
-    public static String UPLOAD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "static", "uploads").toString();
+    private final Environment env;
+    public final String UPLOAD_DIRECTORY;
 
+    @Autowired
+    public FileLoader(Environment env, Environment env1) {
+        this.env = env1;
+        String path = env.getProperty("UPLOADS_RESOURCE_PATH");
+        if (Objects.isNull(path)) {
+            throw new EnvVarNotFoundException("Environment variable 'UPLOADS_RESOURCE_PATH' not found");
+        }
+        UPLOAD_DIRECTORY = Path.of(path, "uploadedImages").toString();
+    }
 
-    public static String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
         //file name as UUID + extension
         String newName = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
 
@@ -30,7 +47,7 @@ public class FileLoader {
         return newName;
     }
 
-    public static void deleteFile(String fileName) {
+    public void deleteFile(String fileName) {
         try {
             Files.deleteIfExists(Paths.get(UPLOAD_DIRECTORY, fileName));
         } catch (IOException e) {
