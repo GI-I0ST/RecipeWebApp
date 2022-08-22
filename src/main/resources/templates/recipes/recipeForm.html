@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Recipe Form</title>
-    <link th:rel="stylesheet" th:href="@{/assets//bootstrap/css/bootstrap.min.css} "/>
-    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
-    <script th:src="@{/assets/jquery/jquery-3.6.0.min.js}"></script>
 </head>
 <body>
-
 <form id="recipe_form"
       th:method="((${recipe.id}) ? 'PUT' : 'POST')"
       th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"
-      th:modelAttribute>
+      th:modelAttribute
+      enctype="multipart/form-data">
 
     <div class="mb-3">
         <label for="recipe_form_title" class="form-label">title</label>
@@ -21,7 +18,8 @@
 
     <div class="mb-3">
         <label for="recipe_form_image" class="form-label">image</label>
-        <input type="text" th:field="${recipe.image}" id="recipe_form_image" class="form-control"/>
+        <img th:src="@{/uploads/{image}(image=*{image})}" height="300">
+        <input id="recipe_form_image" type="file" accept="image/*" th:field="${recipe.imageMultipart}" multiple="multiple" class="form-control"/>
     </div>
 
     <div class="mb-3">

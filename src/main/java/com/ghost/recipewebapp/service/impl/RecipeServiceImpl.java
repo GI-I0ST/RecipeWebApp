@@ -1,15 +1,18 @@
 package com.ghost.recipewebapp.service.impl;
 
+import com.ghost.recipewebapp.entity.AbstractMultipartImageEntity;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.service.RecipeService;
+import com.ghost.recipewebapp.util.FileLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-
+import java.util.Objects;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
@@ -20,11 +23,43 @@ public class RecipeServiceImpl implements RecipeService {
         this.recipeRepository = recipeRepository;
     }
 
+    private void uploadImage(AbstractMultipartImageEntity imageEntity) {
+        MultipartFile imageMultipart = imageEntity.getImageMultipart();
+
+        if (Objects.nonNull(imageMultipart) && !imageMultipart.isEmpty()) {
+            String imgName = FileLoader.uploadFile(imageMultipart);
+            imageEntity.setImage(imgName);
+        }
+    }
+
+    private void deleteImage(AbstractMultipartImageEntity imageEntity) {
+        String imgName = imageEntity.getImage();
+
+        if (Objects.nonNull(imgName) && !imgName.isBlank()) {
+            FileLoader.deleteFile(imgName);
+            imageEntity.setImage(null);
+        }
+    }
+
+    private void updateImage(AbstractMultipartImageEntity imageEntity) {
+        MultipartFile imageMultipart = imageEntity.getImageMultipart();
+
+        if (Objects.nonNull(imageMultipart) && !imageMultipart.isEmpty()) {
+            deleteImage(imageEntity);
+            uploadImage(imageEntity);
+        }
+    }
+
     @Override
     public Long addNewRecipe(Recipe newRecipe) {
+        // add reference to steps
         newRecipe.getStepsList().forEach(step -> {
             step.setRecipe(newRecipe);
         });
+
+        //upload images
+        uploadImage(newRecipe);
+        newRecipe.getStepsList().forEach(this::uploadImage);
 
         recipeRepository.save(newRecipe);
 
@@ -38,10 +73,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Recipe getRecipeById(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
+        return recipeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        return recipe;
     }
 
     @Override
@@ -52,6 +85,9 @@ public class RecipeServiceImpl implements RecipeService {
         newRecipe.setCommentsList(oldRecipe.getCommentsList());
         newRecipe.getStepsList().forEach(step -> step.setRecipe(newRecipe));
 
+        updateImage(newRecipe);
+        newRecipe.getStepsList().forEach(this::updateImage);
+
         recipeRepository.save(newRecipe);
     }
 
@@ -59,6 +95,9 @@ public class RecipeServiceImpl implements RecipeService {
     public void deleteRecipeById(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        deleteImage(recipe);
+        recipe.getStepsList().forEach(this::deleteImage);
 
         recipeRepository.delete(recipe);
     }

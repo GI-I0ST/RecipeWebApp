@@ -3,6 +3,7 @@ package com.ghost.recipewebapp.controller;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,8 +11,13 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/recipes")
 public class RecipeController {
+    private final RecipeService recipeService;
+
     @Autowired
-    private RecipeService recipeService;
+    public RecipeController(RecipeService recipeService) {
+        this.recipeService = recipeService;
+    }
+
 
     @GetMapping("")
     public String getAllRecipes(Model model) {
@@ -32,7 +38,7 @@ public class RecipeController {
         return "recipes/recipeForm";
     }
 
-    @PostMapping("/new")
+    @PostMapping(value = "/new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public String addNewRecipe(@ModelAttribute("recipe") Recipe newRecipe) {
         Long id = recipeService.addNewRecipe(newRecipe);
         return "redirect:/recipes/" + id;
