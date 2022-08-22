@@ -18,7 +18,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "recipes")
-public class Recipe {
+public class Recipe extends AbstractMultipartImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -26,6 +26,7 @@ public class Recipe {
     @ToString.Exclude
     private Long id;
 
+    // image name
     @Column(name = "image")
     private String image;
 
@@ -33,9 +34,11 @@ public class Recipe {
     @NotBlank
     private String title;
 
+    // time in minutes
     @Column(name = "time")
     private int time;
 
+    // calories in kcal
     @Column(name = "calories")
     private int calories;
 
@@ -57,12 +60,10 @@ public class Recipe {
     @Valid
     private List<Step> stepsList = new ArrayList<>();
 
-
     //comments to recipe
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @Valid
     private List<Comment> commentsList = new ArrayList<>();
-
 
     @Override
     public boolean equals(Object o) {

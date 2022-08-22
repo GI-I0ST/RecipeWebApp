@@ -8,13 +8,15 @@
 <form id="recipe_form"
       th:method="((${recipe.id}) ? 'PUT' : 'POST')"
       th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"
-      th:object="${recipe}">
+      th:object="${recipe}"
+      enctype="multipart/form-data">
 
     <label for="recipe_form_title">title</label>
     <input type="text" th:field="*{title}" id="recipe_form_title"/>
 
     <label for="recipe_form_image">image</label>
-    <input type="text" th:field="*{image}" id="recipe_form_image"/>
+    <img th:src="@{/uploads/{image}(image=*{image})}" height="300">
+    <input id="recipe_form_image" type="file" accept="image/*" th:field="*{imageMultipart}" multiple="multiple"/>
 
     <label for="recipe_form_time">time</label>
     <input type="number" inputmode="numeric" min="0" value="30" th:field="*{time}" id="recipe_form_time"/>

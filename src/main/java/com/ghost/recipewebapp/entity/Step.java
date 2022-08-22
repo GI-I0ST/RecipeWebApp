@@ -9,8 +9,6 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -19,7 +17,7 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "steps")
-public class Step {
+public class Step extends AbstractMultipartImageEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,10 +30,8 @@ public class Step {
     private String text;
 
     //images for step
-    @ElementCollection
     @Column(name = "image")
-    @CollectionTable(name = "step_images", joinColumns = @JoinColumn(name = "step_id"))
-    private List<String> imageList = new ArrayList<>();
+    private String image;
 
     //parent
     @ManyToOne
