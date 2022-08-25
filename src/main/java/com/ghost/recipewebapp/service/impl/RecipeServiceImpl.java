@@ -56,14 +56,16 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Long addNewRecipe(Recipe newRecipe) {
-        // add reference to steps
+        // for steps
         newRecipe.getStepsList().forEach(step -> {
+            // add reference to parent
             step.setRecipe(newRecipe);
+            // upload image
+            this.uploadImage(step);
         });
 
         //upload images
         uploadImage(newRecipe);
-        newRecipe.getStepsList().forEach(this::uploadImage);
 
         recipeRepository.save(newRecipe);
 
@@ -86,11 +88,22 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe oldRecipe = recipeRepository.findById(newRecipe.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        // add comments
         newRecipe.setCommentsList(oldRecipe.getCommentsList());
-        newRecipe.getStepsList().forEach(step -> step.setRecipe(newRecipe));
 
+        // delete images from steps
+        oldRecipe.getStepsList().forEach(this::deleteImage);
+
+        newRecipe.getStepsList().forEach(step -> {
+            // add reference to parent
+            step.setRecipe(newRecipe);
+            // upload image
+            this.uploadImage(step);
+        });
+
+        // edit image
+        newRecipe.setImage(oldRecipe.getImage());
         updateImage(newRecipe);
-        newRecipe.getStepsList().forEach(this::updateImage);
 
         recipeRepository.save(newRecipe);
     }
