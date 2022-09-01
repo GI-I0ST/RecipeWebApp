@@ -3,60 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <title>Recipe Form</title>
+
+    <th:block th:insert="~{recipes/index::head/link}">Links</th:block>
+    <th:block th:insert="~{recipes/index::head/script}">Scripts</th:block>
 </head>
 <body>
-<form id="recipe_form"
-      th:method="((${recipe.id}) ? 'PUT' : 'POST')"
-      th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"
-      th:modelAttribute
-      enctype="multipart/form-data">
 
-    <div class="mb-3">
-        <label for="recipe_form_title" class="form-label">title</label>
-        <input type="text" th:field="${recipe.title}" id="recipe_form_title" class="form-control"/>
-    </div>
+<th:block th:insert="~{recipes/index::navbar}">Navbar</th:block>
 
-    <div class="mb-3">
-        <label for="recipe_form_image" class="form-label">image</label>
-        <img th:src="@{/uploads/{image}(image=*{image})}" height="300">
-        <input id="recipe_form_image" type="file" accept="image/*" th:field="${recipe.imageMultipart}" multiple="multiple" class="form-control"/>
-    </div>
+<div class="container my-5 py-3 px-5 shadow">
+    <form id="recipe_form"
+          th:method="((${recipe.id}) ? 'PUT' : 'POST')"
+          th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"
+          th:modelAttribute
+          enctype="multipart/form-data">
 
-    <div class="mb-3">
-        <label for="recipe_form_time" class="form-label">time</label>
-        <input type="number" inputmode="numeric" min="0" value="30" th:field="${recipe.time}" id="recipe_form_time"
-               class="form-control"/>
-    </div>
+        <!-- Title -->
+        <div class="mb-3">
+            <label for="recipe_form_title" class="form-label">Title</label>
+            <input type="text" th:field="${recipe.title}" id="recipe_form_title" class="form-control" required/>
+        </div>
+        <!-- Title -->
 
-    <div class="mb-3">
-        <label for="recipe_form_calories" class="form-label">calories</label>
-        <input type="number" inputmode="numeric" min="0" th:field="${recipe.calories}"
-               id="recipe_form_calories" class="form-control"/>
-    </div>
-
-    <div class="mb-3">
-        <label for="recipe_form_ingredients" class="form-label">ingredients</label>
-        <input type="text" th:field="${recipe.ingredients}" id="recipe_form_ingredients" class="form-control"/>
-    </div>
-
-    <div id="recipe_form_steps">
-        <th:block th:each="step, iStat : ${recipe.stepsList}">
-            <div class="mb-3 recipe_step">
-                <p class="step_direction" th:text="|Step ${iStat.count}|">Step:</p>
-                <button type="button" class="btn btn-danger delete_step_button">-</button>
-                <input type="text" th:value="${step.text}" th:name="|stepsList[${iStat.index}].text|" class="form-control"/>
+        <!-- Image -->
+        <div class="mb-3 d-flex flex-column align-items-center">
+            <!-- Real Image -->
+            <div th:if="${recipe.image}"
+                 class="align-items-center d-flex justify-content-center recipe-full-image-box mb-3">
+                <img th:src="@{/uploadedImages/{file}(file=${recipe.image})}"
+                     class="recipe-full-image">
             </div>
-        </th:block>
+            <!-- Real Image -->
+
+            <!-- Empty Image icon -->
+            <div th:if="!${recipe.image}"
+                 class="align-items-center d-flex justify-content-center recipe-full-image-box-empty mb-3">
+                <i class="bi bi-card-image fs-1"></i>
+            </div>
+            <!-- Empty Image icon -->
+
+            <input id="recipe_form_image" type="file" accept="image/*" th:field="${recipe.imageMultipart}"
+                   class="form-control w-50"/>
+        </div>
+        <!-- Image -->
+
+        <div class="hstack gap-3 justify-content-center">
+            <!-- Time -->
+            <div class="mb-3">
+                <label for="recipe_form_time" class="form-label">
+                    <i class="bi bi-clock-history fs-4"></i>
+                    Time
+                </label>
+                <input type="number" inputmode="numeric" min="1" value="144000" th:field="${recipe.time}"
+                       id="recipe_form_time"
+                       class="form-control" />
+            </div>
+            <!-- Time -->
+
+            <!-- Calories -->
+            <div class="mb-3">
+                <label for="recipe_form_calories" class="form-label">
+                    <i class="bi bi-hypnotize fs-4"></i>
+                    Calories
+                </label>
+                <input type="number" inputmode="numeric" min="0" th:field="${recipe.calories}"
+                       id="recipe_form_calories" class="form-control"/>
+            </div>
+            <!-- Calories -->
+        </div>
+
+        <!-- Ingredients -->
+        <div class="mb-3">
+            <label for="recipe_form_ingredients" class="form-label">Ingredients</label>
+            <input type="text" th:field="${recipe.ingredients}" id="recipe_form_ingredients" class="form-control" required/>
+        </div>
+        <!-- Ingredients -->
+
+        <!-- Steps -->
+        <div id="recipe_form_steps">
+            <th:block th:each="step, iStat : ${recipe.stepsList}">
+                <!-- Step -->
+                <div class="mb-3 recipe_step">
+                    <!-- Step header -->
+                    <div class="hstack gap-3">
+                        <p class="step_direction mb-0" th:text="|Step ${iStat.count}|">Step:</p>
+                        <button type="button" class="btn btn-danger delete_step_button">-</button>
+                    </div>
+                    <!-- Step header -->
+
+                    <!-- Steps image -->
+                    <div class="d-flex flex-column align-items-center mb-3">
+                        <!-- Real Image -->
+                        <div th:if="${step.image}"
+                             class="align-items-center d-flex justify-content-center mb-3">
+                            <img th:src="@{/uploadedImages/{file}(file=${step.image})}"
+                                 class="step-image">
+                        </div>
+                        <!-- Real Image -->
+
+                        <!-- Empty Image icon -->
+                        <div th:if="!${step.image}"
+                             class="align-items-center d-flex justify-content-center step-image-box-empty mb-3">
+                            <i class="bi bi-card-image fs-1"></i>
+                        </div>
+                        <!-- Empty Image icon -->
+
+                        <input type="file" accept="image/*" th:name="|stepsList[${iStat.index}].imageMultipart|"
+                               class="form-control w-50 step-image-multipart-input"/>
+
+                        <input type="hidden" th:name="|stepsList[${iStat.index}].image|" th:value="${step.image}"
+                               class="step-image-input"/>
+                    </div>
+                    <!-- Steps image -->
+
+                    <!-- Steps text -->
+                    <textarea class="form-control step-direction-input" rows="3" th:text="${step.text}"
+                              th:name="|stepsList[${iStat.index}].text|" required></textarea>
+                    <!-- Steps text -->
+                </div>
+                <!-- Step -->
+            </th:block>
+
+            <!-- Add step button -->
+            <div class="mb-3">
+                <button type="button" id="recipe_form_add_step" class="btn btn-success">Add step</button>
+            </div>
+            <!-- Add step button -->
+        </div>
+        <!-- Steps -->
 
         <div class="mb-3">
-            <button type="button" id="recipe_form_add_step" class="btn btn-primary">Add step</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
-    </div>
+    </form>
+</div>
 
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
+<th:block th:insert="~{recipes/index::footer}">Footer</th:block>
+
+<th:block th:insert="~{recipes/index::search_box_script}">Search-box script</th:block>
 
 <script>
     $(document).ready(function () {
@@ -66,24 +150,48 @@
             event.stopPropagation();
             event.stopImmediatePropagation();
 
+            console.log("clicked");
+
             step_list_size--;
-            $(this).parent().remove();
+            $(this).parent().parent().remove();
 
             $(".step_direction").get().forEach(function (step, index) {
-                step.innerHTML = "Step " + (index + 1) + ":";
+                step.innerHTML = "Step " + (index + 1);
             });
+
+            $(".step-direction-input").each(function (index) {
+                $(this).attr("name", "stepsList[" + index + "].text");
+            });
+
+            $(".step-image-input").each(function (index) {
+                $(this).attr("name", "stepsList[" + index + "].image");
+            })
+
+            $(".step-image-multipart-input").each(function (index) {
+                $(this).attr("name", "stepsList[" + index + "].imageMultipart");
+            })
         }
 
         function add_step(event) {
             step_list_size++;
 
-            $('#recipe_form_add_step').before("<div class=\"mb-3 recipe_step\">\n" +
-                "            <p class=\"step_direction\">Step " + step_list_size + ":</p>\n" +
-                "            <input type=\"text\" name=\"stepsList[" + (step_list_size - 1) + "].text\" class=\"form-control\"/>" +
-                "            <button type=\"button\" class=\"btn btn-danger delete_step_button\">-</button>\n" +
-                "        </div>");
+            $('#recipe_form_add_step').before(
+                "<div class='mb-3 recipe_step'>" +
+                "<div class='hstack gap-3'>" +
+                "<p class='step_direction mb-0'>Step " + step_list_size + "</p>" +
+                "<button type='button' class='btn btn-danger delete_step_button'>-</button>" +
+                "</div>" +
+                "<div class='d-flex flex-column align-items-center mb-3'>" +
+                "<div class='align-items-center d-flex justify-content-center step-image-box-empty mb-3'>" +
+                "<i class='bi bi-card-image fs-1'></i>" +
+                "</div>" +
+                "<input type='file' accept='image/*' name='stepsList[" + (step_list_size - 1) + "].imageMultipart' class='form-control w-50 step-image-multipart-input'/>" +
+                "</div>" +
+                "<textarea type='text' name='stepsList[" + (step_list_size - 1) + "].text' class='form-control step-direction-input' rows='3'></textarea>" +
+                "</div>"
+            );
 
-            $('.recipe_step:last').children(".delete_step_button").on("click", remove_step);
+            $('.delete_step_button').last().on("click", remove_step);
         }
 
         $('#recipe_form_add_step').on("click", add_step);
@@ -92,4 +200,5 @@
     });
 </script>
 </body>
+
 </html>

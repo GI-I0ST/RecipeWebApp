@@ -3,25 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <title>Recipes</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link th:rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}"/>
+    <link th:rel="stylesheet" th:href="@{/assets/css/style.css}"/>
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/assets/jquery/jquery-3.6.0.min.js}"></script>
 </head>
-<body>
-<div class="recipes_list" th:fragment="recipesList(recipes)">
-    <div class="recipe_short" th:each="recipe : ${recipes}">
-        <div>
-            <h3>title:</h3>
-            <h3>
-                <a th:href="@{'/recipes/' + ${recipe.id}}" th:text="${recipe.title}">title for recipe</a>
-            </h3>
-        </div>
-        <div th:if="${recipe.image}">
-            <p>image:</p>
-            <p th:text="${recipe.image}">image for recipe</p>
-        </div>
-        <div th:if="${recipe.time}">
-            <p>time:</p>
-            <p th:text="${recipe.time}">time for recipe</p>
-        </div>
+<body class="d-flex flex-column min-vh-100">
+<!-- Navbar -->
+<nav th:fragment="navbar" class="navbar bg-light shadow-sm py-0 flex-nowrap text-nowrap">
+    <div class="container-fluid hstack gap-3">
+        <!-- Logo -->
+        <a class="navbar-brand me-0" th:href="@{/recipes}">
+            <img class="logo" src="/assets/images/logo.png" height="80">
+        </a>
+        <!-- Logo -->
+
+        <!-- Nav links -->
+        <ul class="navbar-nav mb-0">
+            <!-- Home link -->
+            <li class="nav-item hover-underline-animation">
+                <a class="nav-link active" th:href="@{/recipes}">Home</a>
+            </li>
+            <!-- Home link -->
+        </ul>
+        <!-- Nav links -->
+
+        <!-- Search form -->
+        <form class="d-flex input-group me-auto flex-nowrap text-nowrap" id="nav-search-form">
+            <!-- Search icon -->
+            <span class="border-0 me-2">
+                <i class="bi bi-search"></i>
+            </span>
+            <!-- Search icon -->
+
+            <!-- Search box -->
+            <input
+                    type="search"
+                    class="form-control rounded"
+                    id="nav-search-box"
+                    placeholder="Search"
+                    aria-label="Search"
+                    aria-describedby="search-addon"
+            />
+            <!-- Search box -->
+        </form>
+        <!-- Search form -->
+
+        <!-- User control links -->
+        <ul class="navbar-nav ms-auto mb-0 flex-row hstack gap-3">
+            <!-- Favourites link -->
+            <li class="nav-item hover-underline-animation">
+                <a class="nav-link active" th:href="@{/recipes}">
+                    <i class="bi bi-bookmark-heart"></i>
+                    Favourites
+                </a>
+            </li>
+            <!-- Favourites link -->
+
+            <div class="d-flex flex-column justify-content-center">
+                <div class="vr h-50"></div>
+            </div>
+
+            <!-- Login link -->
+            <li class="nav-item hover-underline-animation">
+                <a class="nav-link active" th:href="@{/login}">
+                    <i class="bi bi-person"></i>
+                    Login
+                </a>
+            </li>
+            <!-- Login link -->
+
+            <div class="d-flex flex-column justify-content-center">
+                <div class="vr h-50"></div>
+            </div>
+
+            <!-- Profile link -->
+            <li class="nav-item hover-underline-animation">
+                <a class="nav-link active" th:href="@{/profile}">
+                    <i class="bi bi-person"></i>
+                    Profile
+                </a>
+            </li>
+            <!-- Profile link -->
+
+            <div class="d-flex flex-column justify-content-center">
+                <div class="vr h-50"></div>
+            </div>
+
+            <!-- Add Recipe button -->
+            <li class="nav-item">
+                <a class="btn btn-outline-success" role="button" th:href="@{/recipes/new}">
+                    <i class="bi bi-plus-circle"></i>
+                    Add Recipe
+                </a>
+            </li>
+            <!-- Add Recipe button -->
+        </ul>
+        <!-- User control links -->
     </div>
+</nav>
+<!-- Navbar -->
+
+<!-- Main content -->
+<div class="container my-5 py-3 px-5 shadow">
+    <!-- Recipes list -->
+    <div class="recipes_list" th:fragment="recipesList(recipes)">
+        <!-- Short recipe -->
+        <th:block th:each="recipe, iStat : ${recipes}">
+            <div class="recipe_short hstack gap-3">
+                <!-- Recipe image -->
+                <div class="align-items-center d-flex justify-content-center recipe-short-image-box flex-shrink-0">
+                    <a th:href="@{/recipes/{id}(id=${recipe.id})}">
+                        <i th:if="!${recipe.image}" class="bi bi-card-image fs-1"></i>
+                        <img th:if="${recipe.image}" th:src="@{/uploadedImages/{file}(file=${recipe.image})}"
+                             class="recipe-short-image">
+                    </a>
+                </div>
+                <!-- Recipe image -->
+                <!-- Recipe description -->
+                <div class="d-flex flex-column align-items-center w-100">
+                    <!-- Title -->
+                    <div>
+                        <h3>
+                            <a class="text-decoration-none" href="#" th:href="@{/recipes/{id}(id=${recipe.id})}"
+                               th:text="${recipe.title}">title for recipe</a>
+                        </h3>
+                        <div class="hstack gap-1">
+                            <p>Author:</p>
+                            <p>John Doe</p>
+                        </div>
+                    </div>
+                    <!-- Title -->
+                    <!-- Info row -->
+                    <div class="d-flex my-4 flex-wrap">
+                        <!-- Time -->
+                        <div class="align-items-center hstack gap-1">
+                            <i class="bi bi-clock-history fs-4"></i>
+                            <p class="mb-0">1h 40min</p>
+                        </div>
+                        <!-- Time -->
+
+                        <div class="vr mx-5"></div>
+
+                        <!-- Rating -->
+                        <div class="align-items-center hstack gap-1">
+                            <i class="bi bi-star-fill fs-4"></i>
+                            <p class="mb-0">4.7</p>
+                        </div>
+                        <!-- Rating -->
+
+                        <th:block th:if="${recipe.calories}">
+                            <div class="vr mx-5"></div>
+
+                            <!-- Calories -->
+                            <div class="align-items-center hstack gap-1">
+                                <i class="bi bi-hypnotize fs-4"></i>
+                                <p class="mb-0" th:text="|${recipe.calories} kcal|">40kcal</p>
+                            </div>
+                            <!-- Calories -->
+                        </th:block>
+                    </div>
+                    <!-- Info row -->
+                    <!-- Button block -->
+                    <div>
+                        <!-- Button Add to Favourites -->
+                        <button class="btn btn-outline-success">
+                            <i class="bi bi-bookmark-heart"></i>
+                            Add to Favourites
+                        </button>
+                        <!-- Button Add to Favourites -->
+
+                        <!-- Button Remove from Favourites -->
+                        <button class="btn btn-outline-danger">
+                            <i class="bi bi-bookmark-x-fill"></i>
+                            Remove from Favourites
+                        </button>
+                        <!-- Button Add to Favourites -->
+                    </div>
+                    <!-- Button block -->
+                </div>
+                <!-- Recipe description -->
+            </div>
+
+            <div class="d-flex justify-content-center my-2" th:if="!${iStat.last}">
+                <hr class="w-25 hr-shadow">
+            </div>
+        </th:block>
+        <!-- Short recipe -->
+    </div>
+    <!-- Recipes list -->
 </div>
+<!-- Main content -->
+
+<!-- Footer -->
+<footer th:fragment="footer" class="text-center text-lg-start bg-white text-muted mt-auto">
+    <!-- Section: Social media -->
+    <section class="d-flex justify-content-center justify-content-lg-between py-1 px-5 border-bottom">
+        <!-- Left -->
+        <div class="me-5 d-flex align-items-center">
+            <span>Get connected with us on social networks:</span>
+        </div>
+        <!-- Left -->
+
+        <!-- Right -->
+        <div>
+            <!-- Linkedin -->
+            <a href="https://www.linkedin.com/in/bohdan-andrusenko-6ba312213/"
+               class="me-4 link-grayish text-decoration-none">
+                <i class="bi bi-linkedin fs-2"></i>
+            </a>
+            <!-- Linkedin -->
+            <!-- GitHub -->
+            <a href="https://github.com/GI-I0ST" class="me-4 link-grayish text-decoration-none">
+                <i class="bi bi-github fs-2"></i>
+            </a>
+            <!-- GitHub -->
+            <!-- Telegram -->
+            <a href="https://t.me/I_gHoSt_I" class="me-4 link-grayish text-decoration-none">
+                <i class="bi bi-telegram fs-2"></i>
+            </a>
+            <!-- Telegram -->
+        </div>
+        <!-- Right -->
+    </section>
+    <!-- Section: Social media -->
+
+    <!-- Section: Links  -->
+    <section class="">
+        <div class="container text-center text-md-start mt-5">
+            <!-- Grid row -->
+            <div class="row mt-3">
+                <!-- Grid column -->
+                <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                    <!-- Content -->
+                    <h6 class="text-uppercase fw-bold mb-4">
+                        <i class="fas fa-gem me-3 text-grayish"></i>Company name
+                    </h6>
+                    <p>
+                        Something useful about company
+                    </p>
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                    <!-- Links -->
+                    <h6 class="text-uppercase fw-bold mb-4">
+                        Useful links
+                    </h6>
+                    <p>
+                        <a href="#!" th:href="@{/recipes}" class="text-reset">Recipes</a>
+                    </p>
+                    <p>
+                        <a href="#!" th:href="@{/profile}" class="text-reset">My profile</a>
+                    </p>
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                    <!-- Links -->
+                    <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+                    <p>
+                        <i class="bi bi-envelope-fill"></i>
+                        jobbohdan@gmail.com
+                    </p>
+                    <p>
+                        <i class="bi bi-envelope-fill"></i>
+                        makesmile321@gmail.com
+                    </p>
+                </div>
+                <!-- Grid column -->
+            </div>
+            <!-- Grid row -->
+        </div>
+    </section>
+    <!-- Section: Links  -->
+
+    <!-- Copyright -->
+    <div class="text-center p-2" style="background-color: rgba(0, 0, 0, 0.025);">
+        <p class="mb-0">© 2022 Designed & Developed by Bohdan Andrusenko</p>
+    </div>
+    <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
+<script th:fragment="search_box_script">
+    $(document).ready(function () {
+        let form_width;
+        $("#nav-search-box")
+            .focus(function () {
+                let form = $(this).parent();
+                form_width = form.width();
+                form.animate({width: "100%"}, 800);
+            })
+            .focusout(function () {
+                $(this).parent().animate({width: form_width}, 800, function () {
+                    $("#nav-search-form").css("width", "auto");
+                });
+            });
+    });
+</script>
+
 </body>
 </html>
