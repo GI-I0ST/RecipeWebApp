@@ -19,12 +19,10 @@ import java.util.UUID;
 @Component
 public class FileLoader {
 
-    private final Environment env;
     public final String UPLOAD_DIRECTORY;
 
     @Autowired
-    public FileLoader(Environment env, Environment env1) {
-        this.env = env1;
+    public FileLoader(Environment env) {
         String path = env.getProperty("UPLOADS_RESOURCE_PATH");
         if (Objects.isNull(path)) {
             throw new EnvVarNotFoundException("Environment variable 'UPLOADS_RESOURCE_PATH' not found");
