@@ -6,6 +6,8 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ public class Recipe extends AbstractMultipartImageEntity {
 
     // time in minutes
     @Column(name = "time")
+    @Min(1)
+    @Max(144_000)
     private int time;
 
     // calories in kcal
