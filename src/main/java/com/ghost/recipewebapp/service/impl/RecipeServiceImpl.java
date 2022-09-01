@@ -91,15 +91,21 @@ public class RecipeServiceImpl implements RecipeService {
         // add comments
         newRecipe.setCommentsList(oldRecipe.getCommentsList());
 
-        // delete images from steps
-        oldRecipe.getStepsList().forEach(this::deleteImage);
-
         newRecipe.getStepsList().forEach(step -> {
             // add reference to parent
             step.setRecipe(newRecipe);
+
+            // remove old uploaded image from deletion list
+            if (!step.getImage().isBlank() && step.getImageMultipart().isEmpty()) {
+                oldRecipe.getStepsList().removeIf(oldStep -> oldStep.getImage().equals(step.getImage()));
+            }
+
             // upload image
             this.uploadImage(step);
         });
+
+        // delete old uploaded images from steps
+        oldRecipe.getStepsList().forEach(this::deleteImage);
 
         // edit image
         newRecipe.setImage(oldRecipe.getImage());
