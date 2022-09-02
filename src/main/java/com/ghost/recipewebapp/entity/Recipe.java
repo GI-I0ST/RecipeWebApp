@@ -3,6 +3,7 @@ package com.ghost.recipewebapp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -39,8 +40,14 @@ public class Recipe extends AbstractMultipartImageEntity {
     // time in minutes
     @Column(name = "time")
     @Min(1)
-    @Max(144_000)
+    @Max(10_139)
     private int time;
+
+    @Formula("time / 60")
+    private int hours;
+
+    @Formula("time % 60")
+    private int minutes;
 
     // calories in kcal
     @Column(name = "calories")

@@ -136,14 +136,18 @@
         <!-- Steps header -->
         <div class="w-50 d-flex mb-3">
             <h4>Steps</h4>
+            <!-- Time -->
             <div class="ms-auto d-flex flex-row align-items-center flex-nowrap">
                 <i class="bi bi-clock-history fs-4"></i>
-                <p class="mb-0 ms-1">1h 20min</p>
+                <p class="mb-0 ms-1" th:text="|${recipe.hours}h ${recipe.minutes}min|">1h 20min</p>
             </div>
+            <!-- Time -->
+            <!-- Calories -->
             <div th:if="${recipe.calories}" class="ms-3 d-flex flex-row align-items-center flex-nowrap">
                 <i class="bi bi-hypnotize fs-4"></i>
                 <p class="mb-0 ms-1" th:text="|${recipe.calories} kcal|">100 kcal</p>
             </div>
+            <!-- Calories -->
         </div>
         <!-- Steps header -->
 

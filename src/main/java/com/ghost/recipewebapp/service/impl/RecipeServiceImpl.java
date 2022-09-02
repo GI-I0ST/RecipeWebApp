@@ -60,12 +60,15 @@ public class RecipeServiceImpl implements RecipeService {
         newRecipe.getStepsList().forEach(step -> {
             // add reference to parent
             step.setRecipe(newRecipe);
-            // upload image
+            // upload step image
             this.uploadImage(step);
         });
 
-        //upload images
+        // upload recipe image
         uploadImage(newRecipe);
+
+        // set time
+        newRecipe.setTime(newRecipe.getHours() * 60 + newRecipe.getMinutes());
 
         recipeRepository.save(newRecipe);
 
@@ -110,6 +113,9 @@ public class RecipeServiceImpl implements RecipeService {
         // edit image
         newRecipe.setImage(oldRecipe.getImage());
         updateImage(newRecipe);
+
+        // set time
+        newRecipe.setTime(newRecipe.getHours() * 60 + newRecipe.getMinutes());
 
         recipeRepository.save(newRecipe);
     }
