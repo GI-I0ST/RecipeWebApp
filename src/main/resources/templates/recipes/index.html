@@ -139,9 +139,10 @@
                     <!-- Info row -->
                     <div class="d-flex my-4 flex-wrap">
                         <!-- Time -->
-                        <div class="align-items-center hstack gap-1">
-                            <i class="bi bi-clock-history fs-4"></i>
-                            <p class="mb-0">1h 40min</p>
+                        <div class="align-items-center d-flex flex-row">
+                            <i class="bi bi-clock-history fs-4 me-1"></i>
+                            <p class="mb-0 me-1" th:if="${recipe.hours}" th:text="|${recipe.hours}h|"> 1h </p>
+                            <p class="mb-0" th:if="${recipe.minutes}" th:text="|${recipe.minutes}min|"> 40min  </p>
                         </div>
                         <!-- Time -->
 
