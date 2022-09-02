@@ -12,7 +12,7 @@
 <th:block th:insert="~{recipes/index::navbar}">Navbar</th:block>
 
 <div class="container my-5 py-3 px-5 shadow">
-    <form id="recipe_form"
+    <form id="recipe-form"
           th:method="((${recipe.id}) ? 'PUT' : 'POST')"
           th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"
           th:modelAttribute
@@ -20,8 +20,8 @@
 
         <!-- Title -->
         <div class="mb-3">
-            <label for="recipe_form_title" class="form-label">Title</label>
-            <input type="text" th:field="${recipe.title}" id="recipe_form_title" class="form-control" required/>
+            <label for="recipe-form-title" class="form-label">Title</label>
+            <input type="text" th:field="${recipe.title}" id="recipe-form-title" class="form-control" required/>
         </div>
         <!-- Title -->
 
@@ -42,7 +42,7 @@
             </div>
             <!-- Empty Image icon -->
 
-            <input id="recipe_form_image" type="file" accept="image/*" th:field="${recipe.imageMultipart}"
+            <input id="recipe-form-image" type="file" accept="image/*" th:field="${recipe.imageMultipart}"
                    class="form-control w-50"/>
         </div>
         <!-- Image -->
@@ -50,44 +50,55 @@
         <div class="hstack gap-3 justify-content-center">
             <!-- Time -->
             <div class="mb-3">
-                <label for="recipe_form_time" class="form-label">
+                <label for="recipe-form-hours" class="form-label">
                     <i class="bi bi-clock-history fs-4"></i>
                     Time
                 </label>
-                <input type="number" inputmode="numeric" min="1" value="144000" th:field="${recipe.time}"
-                       id="recipe_form_time"
-                       class="form-control" />
+                <div class="d-flex flex-row align-items-center">
+                    <input type="number" inputmode="numeric" min="0" max="168" th:field="${recipe.hours}"
+                           id="recipe-form-hours"
+                           class="form-control me-1 w-25"/>
+                    <p class="mb-0">h</p>
+                    <input type="number" inputmode="numeric" min="0" max="59" th:field="${recipe.minutes}"
+                           id="recipe-form-minutes"
+                           class="form-control ms-4 me-1 w-25"/>
+                    <p class="mb-0">min</p>
+                </div>
             </div>
             <!-- Time -->
 
             <!-- Calories -->
             <div class="mb-3">
-                <label for="recipe_form_calories" class="form-label">
+                <label for="recipe-form-calories" class="form-label">
                     <i class="bi bi-hypnotize fs-4"></i>
                     Calories
                 </label>
-                <input type="number" inputmode="numeric" min="0" th:field="${recipe.calories}"
-                       id="recipe_form_calories" class="form-control"/>
+                <div class="d-flex flex-row align-items-center">
+                    <input type="number" inputmode="numeric" min="0" th:field="${recipe.calories}"
+                           id="recipe-form-calories" class="form-control me-1"/>
+                    <p class="mb-0">kcal</p>
+                </div>
             </div>
             <!-- Calories -->
         </div>
 
         <!-- Ingredients -->
         <div class="mb-3">
-            <label for="recipe_form_ingredients" class="form-label">Ingredients</label>
-            <input type="text" th:field="${recipe.ingredients}" id="recipe_form_ingredients" class="form-control" required/>
+            <label for="recipe-form-ingredients" class="form-label">Ingredients</label>
+            <input type="text" th:field="${recipe.ingredients}" id="recipe-form-ingredients" class="form-control"
+                   required/>
         </div>
         <!-- Ingredients -->
 
         <!-- Steps -->
-        <div id="recipe_form_steps">
+        <div id="recipe-form-steps">
             <th:block th:each="step, iStat : ${recipe.stepsList}">
                 <!-- Step -->
-                <div class="mb-3 recipe_step">
+                <div class="mb-3 recipe-step">
                     <!-- Step header -->
                     <div class="hstack gap-3">
-                        <p class="step_direction mb-0" th:text="|Step ${iStat.count}|">Step:</p>
-                        <button type="button" class="btn btn-danger delete_step_button">-</button>
+                        <p class="step-direction mb-0" th:text="|Step ${iStat.count}|">Step:</p>
+                        <button type="button" class="btn btn-danger delete-step-button">-</button>
                     </div>
                     <!-- Step header -->
 
@@ -126,7 +137,7 @@
 
             <!-- Add step button -->
             <div class="mb-3">
-                <button type="button" id="recipe_form_add_step" class="btn btn-success">Add step</button>
+                <button type="button" id="recipe-form-add-step" class="btn btn-success">Add step</button>
             </div>
             <!-- Add step button -->
         </div>
@@ -155,7 +166,7 @@
             step_list_size--;
             $(this).parent().parent().remove();
 
-            $(".step_direction").get().forEach(function (step, index) {
+            $(".step-direction").get().forEach(function (step, index) {
                 step.innerHTML = "Step " + (index + 1);
             });
 
@@ -175,11 +186,11 @@
         function add_step(event) {
             step_list_size++;
 
-            $('#recipe_form_add_step').before(
-                "<div class='mb-3 recipe_step'>" +
+            $('#recipe-form-add-step').before(
+                "<div class='mb-3 recipe-step'>" +
                 "<div class='hstack gap-3'>" +
-                "<p class='step_direction mb-0'>Step " + step_list_size + "</p>" +
-                "<button type='button' class='btn btn-danger delete_step_button'>-</button>" +
+                "<p class='step-direction mb-0'>Step " + step_list_size + "</p>" +
+                "<button type='button' class='btn btn-danger delete-step-button'>-</button>" +
                 "</div>" +
                 "<div class='d-flex flex-column align-items-center mb-3'>" +
                 "<div class='align-items-center d-flex justify-content-center step-image-box-empty mb-3'>" +
@@ -191,12 +202,12 @@
                 "</div>"
             );
 
-            $('.delete_step_button').last().on("click", remove_step);
+            $('.delete-step-button').last().on("click", remove_step);
         }
 
-        $('#recipe_form_add_step').on("click", add_step);
+        $('#recipe-form-add-step').on("click", add_step);
 
-        $('.delete_step_button').on("click", remove_step);
+        $('.delete-step-button').on("click", remove_step);
     });
 </script>
 </body>
