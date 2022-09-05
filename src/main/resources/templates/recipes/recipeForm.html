@@ -15,34 +15,40 @@
     <form id="recipe-form"
           th:method="((${recipe.id}) ? 'PUT' : 'POST')"
           th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"
-          th:modelAttribute
+          th:object="${recipe}"
           enctype="multipart/form-data">
 
         <!-- Title -->
         <div class="mb-3">
             <label for="recipe-form-title" class="form-label">Title</label>
-            <input type="text" th:field="${recipe.title}" id="recipe-form-title" class="form-control" required/>
+            <input type="text" th:field="*{title}" id="recipe-form-title" class="form-control"
+                   th:classappend="${errorForm} ? (${#fields.hasErrors('title')} ? 'is-invalid' : 'is-valid') : ''"/>
+
+            <!-- Title errors -->
+            <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('title')}"
+                 th:errors="*{title}"></div>
+            <!-- Title errors -->
         </div>
         <!-- Title -->
 
         <!-- Image -->
         <div class="mb-3 d-flex flex-column align-items-center">
             <!-- Real Image -->
-            <div th:if="${recipe.image}"
+            <div th:if="*{image}"
                  class="align-items-center d-flex justify-content-center recipe-full-image-box mb-3">
-                <img th:src="@{/uploadedImages/{file}(file=${recipe.image})}"
+                <img th:src="@{/uploadedImages/{file}(file=*{image})}"
                      class="recipe-full-image">
             </div>
             <!-- Real Image -->
 
             <!-- Empty Image icon -->
-            <div th:if="!${recipe.image}"
+            <div th:if="!*{image}"
                  class="align-items-center d-flex justify-content-center recipe-full-image-box-empty mb-3">
                 <i class="bi bi-card-image fs-1"></i>
             </div>
             <!-- Empty Image icon -->
 
-            <input id="recipe-form-image" type="file" accept="image/*" th:field="${recipe.imageMultipart}"
+            <input id="recipe-form-image" type="file" accept="image/*" th:field="*{imageMultipart}"
                    class="form-control w-50"/>
         </div>
         <!-- Image -->
@@ -57,13 +63,24 @@
                 <div class="d-flex flex-row align-items-center">
                     <input type="number" inputmode="numeric" min="0" max="168" th:field="${recipe.hours}"
                            id="recipe-form-hours"
-                           class="form-control me-1 w-25"/>
+                           class="form-control me-1 w-25"
+                           th:classappend="${errorForm} ? (${#fields.hasErrors('time') || #fields.hasErrors('hours') || #fields.hasErrors('minutes')} ? 'is-invalid' : 'is-valid') : ''"/>
                     <p class="mb-0">h</p>
                     <input type="number" inputmode="numeric" min="0" max="59" th:field="${recipe.minutes}"
                            id="recipe-form-minutes"
-                           class="form-control ms-4 me-1 w-25"/>
+                           class="form-control ms-4 me-1 w-25"
+                           th:classappend="${errorForm} ? (${#fields.hasErrors('time') || #fields.hasErrors('hours') || #fields.hasErrors('minutes')} ? 'is-invalid' : 'is-valid') : ''"/>
                     <p class="mb-0">min</p>
                 </div>
+
+                <!-- Time errors -->
+                <div class="alert alert-warning mt-1"
+                     th:if="${#fields.hasErrors('time') || #fields.hasErrors('hours') || #fields.hasErrors('minutes')}">
+                    <div th:errors="*{time}"></div>
+                    <div th:errors="*{hours}"></div>
+                    <div th:errors="*{minutes}"></div>
+                </div>
+                <!-- Time errors -->
             </div>
             <!-- Time -->
 
@@ -74,10 +91,17 @@
                     Calories
                 </label>
                 <div class="d-flex flex-row align-items-center">
-                    <input type="number" inputmode="numeric" min="0" th:field="${recipe.calories}"
-                           id="recipe-form-calories" class="form-control me-1"/>
+                    <input type="number" inputmode="numeric" min="0" th:field="*{calories}"
+                           id="recipe-form-calories" class="form-control me-1"
+                           th:classappend="${errorForm} ? (${#fields.hasErrors('calories')} ? 'is-invalid' : 'is-valid') : ''"/>
                     <p class="mb-0">kcal</p>
                 </div>
+
+                <!-- Calories errors -->
+                <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('calories')}"
+                     th:errors="*{calories}">
+                </div>
+                <!-- Calories errors -->
             </div>
             <!-- Calories -->
         </div>
@@ -85,14 +109,27 @@
         <!-- Ingredients -->
         <div class="mb-3">
             <label for="recipe-form-ingredients" class="form-label">Ingredients</label>
-            <input type="text" th:field="${recipe.ingredients}" id="recipe-form-ingredients" class="form-control"
-                   required/>
+            <input type="text" th:field="*{ingredients}" id="recipe-form-ingredients" class="form-control"
+                   th:classappend="${errorForm} ? (${#fields.hasErrors('ingredients')} ? 'is-invalid' : 'is-valid') : ''"/>
+
+            <!-- Ingredients errors -->
+            <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('ingredients')}"
+                 th:errors="*{ingredients}">
+            </div>
+            <!-- Ingredients errors -->
         </div>
         <!-- Ingredients -->
 
         <!-- Steps -->
         <div id="recipe-form-steps">
-            <th:block th:each="step, iStat : ${recipe.stepsList}">
+
+            <!-- Steps errors -->
+            <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('stepsList')}"
+                 th:errors="*{stepsList}">
+            </div>
+            <!-- Steps errors -->
+
+            <th:block th:each="iStep, iStat : *{stepsList}">
                 <!-- Step -->
                 <div class="mb-3 recipe-step">
                     <!-- Step header -->
@@ -105,15 +142,15 @@
                     <!-- Steps image -->
                     <div class="d-flex flex-column align-items-center mb-3">
                         <!-- Real Image -->
-                        <div th:if="${step.image}"
+                        <div th:if="${iStep.image}"
                              class="align-items-center d-flex justify-content-center mb-3">
-                            <img th:src="@{/uploadedImages/{file}(file=${step.image})}"
+                            <img th:src="@{/uploadedImages/{file}(file=${iStep.image})}"
                                  class="step-image">
                         </div>
                         <!-- Real Image -->
 
                         <!-- Empty Image icon -->
-                        <div th:if="!${step.image}"
+                        <div th:unless="${iStep.image}"
                              class="align-items-center d-flex justify-content-center step-image-box-empty mb-3">
                             <i class="bi bi-card-image fs-1"></i>
                         </div>
@@ -122,15 +159,22 @@
                         <input type="file" accept="image/*" th:name="|stepsList[${iStat.index}].imageMultipart|"
                                class="form-control w-50 step-image-multipart-input"/>
 
-                        <input type="hidden" th:name="|stepsList[${iStat.index}].image|" th:value="${step.image}"
+                        <input type="hidden" th:if="${iStep.image}" th:name="|stepsList[${iStat.index}].image|" th:value="${iStep.image}"
                                class="step-image-input"/>
                     </div>
                     <!-- Steps image -->
 
                     <!-- Steps text -->
-                    <textarea class="form-control step-direction-input" rows="3" th:text="${step.text}"
-                              th:name="|stepsList[${iStat.index}].text|" required></textarea>
+                    <textarea class="form-control step-direction-input" rows="3" th:text="${iStep.text}"
+                              th:name="|stepsList[${iStat.index}].text|"
+                              th:classappend="${errorForm} ? (${#fields.hasErrors('*{stepsList[__${iStat.index}__].text}')} ? 'is-invalid' : 'is-valid') : ''"></textarea>
                     <!-- Steps text -->
+
+                    <!-- Steps text errors -->
+                    <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('*{stepsList[__${iStat.index}__].text}')}"
+                         th:errors="*{stepsList[__${iStat.index}__].text}">
+                    </div>
+                    <!-- Steps text errors -->
                 </div>
                 <!-- Step -->
             </th:block>

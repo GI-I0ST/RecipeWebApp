@@ -26,7 +26,7 @@ public class Step extends AbstractMultipartImageEntity {
     private Long id;
 
     @Column(name = "text")
-    @NotBlank
+    @NotBlank(message = "Step's text is required")
     private String text;
 
     //images for step

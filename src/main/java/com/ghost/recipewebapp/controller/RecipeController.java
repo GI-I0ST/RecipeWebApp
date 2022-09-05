@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/recipes")
@@ -39,7 +42,12 @@ public class RecipeController {
     }
 
     @PostMapping(value = "/new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String addNewRecipe(@ModelAttribute("recipe") Recipe newRecipe) {
+    public String addNewRecipe(@Valid @ModelAttribute("recipe") Recipe newRecipe, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorForm", true);
+            return "recipes/recipeForm";
+        }
+
         Long id = recipeService.addNewRecipe(newRecipe);
         return "redirect:/recipes/" + id;
     }
@@ -53,7 +61,12 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
-    public String editRecipe(@PathVariable Long id, @ModelAttribute("recipe") Recipe newRecipe) {
+    public String editRecipe(@PathVariable Long id, @Valid @ModelAttribute("recipe") Recipe newRecipe, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorForm", true);
+            return "recipes/recipeForm";
+        }
+
         newRecipe.setId(id);
         recipeService.editRecipe(newRecipe);
         return "redirect:/recipes/" + id;

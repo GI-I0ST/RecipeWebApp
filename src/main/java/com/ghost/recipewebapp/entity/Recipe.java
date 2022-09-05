@@ -34,18 +34,18 @@ public class Recipe extends AbstractMultipartImageEntity {
     private String image;
 
     @Column(name = "title")
-    @NotBlank
+    @Size(min = 5, message = "Title must contain at least 5 symbols")
+    @NotBlank(message = "Title is required")
     private String title;
 
     // time in minutes
     @Column(name = "time")
-    @Min(1)
-    @Max(10_139)
+    @Min(value = 1, message = "Time must be greater than 1 minute")
+    @Max(value = 10_080, message = "Time must be less than 7 days")
     private int time;
 
     @Formula("time / 60")
-    @Min(0)
-    @Max(168)
+    @Min(value = 0, message = "Hours must be positive")
     private int hours;
 
     public void setHours(int hours) {
@@ -55,8 +55,8 @@ public class Recipe extends AbstractMultipartImageEntity {
     }
 
     @Formula("time % 60")
-    @Min(0)
-    @Max(59)
+    @Min(value = 0, message = "Minutes must be positive")
+    @Max(value = 59, message = "Minutes must be less than 60")
     private int minutes;
 
     public void setMinutes(int minutes) {
@@ -67,15 +67,16 @@ public class Recipe extends AbstractMultipartImageEntity {
 
     // calories in kcal
     @Column(name = "calories")
+    @Min(value = 0, message = "Calories must be positive")
     private int calories;
 
     @Column(name = "ingredients")
-    @NotBlank
+    @NotBlank(message = "Ingredients required")
     private String ingredients;
 
     //steps to cook
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @Size(min = 1)
+    @Size(min = 1, message = "Recipe must contain at least 1 step")
     @Valid
     private List<Step> stepsList = new ArrayList<>();
 
