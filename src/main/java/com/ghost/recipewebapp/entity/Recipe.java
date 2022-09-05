@@ -73,16 +73,8 @@ public class Recipe extends AbstractMultipartImageEntity {
     @NotBlank
     private String ingredients;
 
-    //delete cascade in deploy
-    //!!! only for testing
-    /*
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-    */
-
     //steps to cook
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Size(min = 1)
     @Valid
     private List<Step> stepsList = new ArrayList<>();

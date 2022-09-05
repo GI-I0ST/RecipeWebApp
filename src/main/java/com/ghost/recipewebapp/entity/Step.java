@@ -33,13 +33,6 @@ public class Step extends AbstractMultipartImageEntity {
     @Column(name = "image")
     private String image;
 
-    //parent
-    @ManyToOne
-    @JoinColumn(name = "recipe_id")
-    @JsonIgnore
-    @ToString.Exclude
-    private Recipe recipe;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
