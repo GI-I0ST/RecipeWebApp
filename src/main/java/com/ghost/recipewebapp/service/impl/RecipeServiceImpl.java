@@ -56,19 +56,11 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Long addNewRecipe(Recipe newRecipe) {
-        // for steps
-        newRecipe.getStepsList().forEach(step -> {
-            // add reference to parent
-            step.setRecipe(newRecipe);
-            // upload step image
-            this.uploadImage(step);
-        });
+        // upload step image
+        newRecipe.getStepsList().forEach(this::uploadImage);
 
         // upload recipe image
         uploadImage(newRecipe);
-
-        // set time
-        newRecipe.setTime(newRecipe.getHours() * 60 + newRecipe.getMinutes());
 
         recipeRepository.save(newRecipe);
 
@@ -95,27 +87,21 @@ public class RecipeServiceImpl implements RecipeService {
         newRecipe.setCommentsList(oldRecipe.getCommentsList());
 
         newRecipe.getStepsList().forEach(step -> {
-            // add reference to parent
-            step.setRecipe(newRecipe);
-
-            // remove old uploaded image from deletion list
+            // remove already uploaded image from deletion list
             if (!step.getImage().isBlank() && step.getImageMultipart().isEmpty()) {
                 oldRecipe.getStepsList().removeIf(oldStep -> step.getImage().equals(oldStep.getImage()));
             }
 
-            // upload image
+            // upload new step image
             this.uploadImage(step);
         });
 
-        // delete old uploaded images from steps
+        // delete unused uploaded step images
         oldRecipe.getStepsList().forEach(this::deleteImage);
 
         // edit image
         newRecipe.setImage(oldRecipe.getImage());
         updateImage(newRecipe);
-
-        // set time
-        newRecipe.setTime(newRecipe.getHours() * 60 + newRecipe.getMinutes());
 
         recipeRepository.save(newRecipe);
     }
