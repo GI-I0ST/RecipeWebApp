@@ -70,9 +70,10 @@ public class Recipe extends AbstractMultipartImageEntity {
     @Min(value = 0, message = "Calories must be positive")
     private int calories;
 
-    @Column(name = "ingredients")
-    @NotBlank(message = "Ingredients required")
-    private String ingredients;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Size(min = 1, message = "Recipe must contain at least 1 ingredient")
+    @Valid
+    private List<Ingredient> ingredientsList = new ArrayList<>();
 
     //steps to cook
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

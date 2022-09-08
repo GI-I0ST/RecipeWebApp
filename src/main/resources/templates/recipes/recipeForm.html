@@ -6,6 +6,7 @@
 
     <th:block th:insert="~{recipes/index::head/link}">Links</th:block>
     <th:block th:insert="~{recipes/index::head/script}">Scripts</th:block>
+    <script th:src="@{/assets/jquery-ui-1.13.2.custom/jquery-ui.js}"></script>
 </head>
 <body>
 
@@ -19,7 +20,7 @@
           enctype="multipart/form-data">
 
         <!-- Title -->
-        <div class="mb-3">
+        <div class="mb-4">
             <label for="recipe-form-title" class="form-label">Title</label>
             <input type="text" th:field="*{title}" id="recipe-form-title" class="form-control"
                    th:classappend="${errorForm} ? (${#fields.hasErrors('title')} ? 'is-invalid' : 'is-valid') : ''"/>
@@ -32,7 +33,7 @@
         <!-- Title -->
 
         <!-- Image -->
-        <div class="mb-3 d-flex flex-column align-items-center">
+        <div class="mb-4 d-flex flex-column align-items-center">
             <!-- Real Image -->
             <div th:if="*{image}"
                  class="align-items-center d-flex justify-content-center recipe-full-image-box mb-3">
@@ -53,7 +54,8 @@
         </div>
         <!-- Image -->
 
-        <div class="hstack gap-3 justify-content-center">
+        <!-- Time & Calories -->
+        <div class="hstack gap-3 justify-content-center mb-4">
             <!-- Time -->
             <div class="mb-3">
                 <label for="recipe-form-hours" class="form-label">
@@ -105,23 +107,71 @@
             </div>
             <!-- Calories -->
         </div>
+        <!-- Time & Calories -->
 
         <!-- Ingredients -->
-        <div class="mb-3">
-            <label for="recipe-form-ingredients" class="form-label">Ingredients</label>
-            <input type="text" th:field="*{ingredients}" id="recipe-form-ingredients" class="form-control"
-                   th:classappend="${errorForm} ? (${#fields.hasErrors('ingredients')} ? 'is-invalid' : 'is-valid') : ''"/>
+        <div class="mb-5">
+            <h4>Ingredients</h4>
 
             <!-- Ingredients errors -->
-            <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('ingredients')}"
-                 th:errors="*{ingredients}">
+            <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('ingredientsList')}"
+                 th:errors="*{ingredientsList}">
             </div>
             <!-- Ingredients errors -->
+
+            <ul class="list-group list-group-flush mb-1" id="ingredients-list">
+                <th:block th:each="ingredient, iStat : *{ingredientsList}">
+                    <!-- Ingredient -->
+                    <li class="list-group-item hstack gap-4">
+                        <div class="w-100">
+                            <!-- Product -->
+                            <input type="text"
+                                   class="form-control ingredient-product-input"
+                                   placeholder="Product"
+                                   th:value="${ingredient.product}"
+                                   th:name="|ingredientsList[${iStat.index}].product|"
+                                   th:classappend="${errorForm} ? (${#fields.hasErrors('*{ingredientsList[__${iStat.index}__].product}')} ? 'is-invalid' : 'is-valid') : ''"/>
+                            <!-- Product -->
+
+                            <!-- Product errors -->
+                            <div class="alert alert-warning mt-1"
+                                 th:if="${#fields.hasErrors('*{ingredientsList[__${iStat.index}__].product}')}"
+                                 th:errors="*{ingredientsList[__${iStat.index}__].product}">
+                            </div>
+                            <!-- Product errors -->
+                        </div>
+                        <div class="w-100">
+                            <!-- Measure -->
+                            <input type="text"
+                                   class="form-control ingredient-measure-input"
+                                   placeholder="Measure"
+                                   th:value="${ingredient.measure}"
+                                   th:name="|ingredientsList[${iStat.index}].measure|"
+                                   th:classappend="${errorForm} ? (${#fields.hasErrors('*{ingredientsList[__${iStat.index}__].measure}')} ? 'is-invalid' : 'is-valid') : ''"/>
+                            <!-- Measure -->
+
+                            <!-- Measure errors -->
+                            <div class="alert alert-warning mt-1"
+                                 th:if="${#fields.hasErrors('*{ingredientsList[__${iStat.index}__].measure}')}"
+                                 th:errors="*{ingredientsList[__${iStat.index}__].measure}">
+                            </div>
+                            <!-- Measure errors -->
+                        </div>
+                        <!-- Delete button -->
+                        <button type="button" class="btn btn-danger delete-ingredient-button">-</button>
+                        <!-- Delete button -->
+                    </li>
+                    <!-- Ingredient -->
+                </th:block>
+            </ul>
+
+            <button id="recipe-form-add-ingredient" class="btn btn-success" type="button">Add ingredient</button>
         </div>
         <!-- Ingredients -->
 
         <!-- Steps -->
-        <div id="recipe-form-steps">
+        <div id="recipe-form-steps" class="mb-5">
+            <h4>Steps</h4>
 
             <!-- Steps errors -->
             <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('stepsList')}"
@@ -159,7 +209,8 @@
                         <input type="file" accept="image/*" th:name="|stepsList[${iStat.index}].imageMultipart|"
                                class="form-control w-50 step-image-multipart-input"/>
 
-                        <input type="hidden" th:if="${iStep.image}" th:name="|stepsList[${iStat.index}].image|" th:value="${iStep.image}"
+                        <input type="hidden" th:if="${iStep.image}" th:name="|stepsList[${iStat.index}].image|"
+                               th:value="${iStep.image}"
                                class="step-image-input"/>
                     </div>
                     <!-- Steps image -->
@@ -171,7 +222,8 @@
                     <!-- Steps text -->
 
                     <!-- Steps text errors -->
-                    <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('*{stepsList[__${iStat.index}__].text}')}"
+                    <div class="alert alert-warning mt-1"
+                         th:if="${#fields.hasErrors('*{stepsList[__${iStat.index}__].text}')}"
                          th:errors="*{stepsList[__${iStat.index}__].text}">
                     </div>
                     <!-- Steps text errors -->
@@ -180,16 +232,13 @@
             </th:block>
 
             <!-- Add step button -->
-            <div class="mb-3">
-                <button type="button" id="recipe-form-add-step" class="btn btn-success">Add step</button>
-            </div>
+            <button type="button" id="recipe-form-add-step" class="btn btn-success">Add step</button>
             <!-- Add step button -->
         </div>
         <!-- Steps -->
 
-        <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+
     </form>
 </div>
 
@@ -199,13 +248,12 @@
 
 <script>
     $(document).ready(function () {
+        // dynamic add/remove steps
         let step_list_size = [[${recipe.stepsList.size()}]]
 
         function remove_step(event) {
             event.stopPropagation();
             event.stopImmediatePropagation();
-
-            console.log("clicked");
 
             step_list_size--;
             $(this).parent().parent().remove();
@@ -250,8 +298,79 @@
         }
 
         $('#recipe-form-add-step').on("click", add_step);
-
         $('.delete-step-button').on("click", remove_step);
+
+        // dynamic add/remove ingredients
+        let ingredient_list_size = [[${recipe.ingredientsList.size()}]]
+
+        function remove_ingredient(event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            ingredient_list_size--;
+            $(this).parent().remove();
+
+            $(".ingredient-measure-input").each(function (index) {
+                $(this).attr("name", "ingredientsList[" + index + "].measure");
+            });
+
+            $(".ingredient-product-input").each(function (index) {
+                $(this).attr("name", "ingredientsList[" + index + "].product");
+            })
+        }
+
+        function add_ingredient(event) {
+            ingredient_list_size++;
+
+            $('#ingredients-list').append(
+                "<li class='list-group-item hstack gap-4'>" +
+                "<div class='w-100'>" +
+                "<!-- Product -->" +
+                "<input type='text'" +
+                "class='form-control ingredient-product-input'" +
+                "placeholder='Product'" +
+                "name='ingredientsList[" + (ingredient_list_size - 1) + "].product'/>" +
+                "<!-- Product -->" +
+                "</div>" +
+                "<div class='w-100'>" +
+                "<!-- Measure -->" +
+                "<input type='text'" +
+                "class='form-control ingredient-measure-input'" +
+                "placeholder='Measure'" +
+                "name='ingredientsList[" + (ingredient_list_size - 1) + "].measure'/>" +
+                "<!-- Measure -->" +
+                "</div>" +
+                "<!-- Delete button -->" +
+                "<button class='btn btn-danger delete-ingredient-button' type='button'>-</button>" +
+                "<!-- Delete button -->" +
+                "</li>"
+            );
+
+            $('.delete-ingredient-button').last().on("click", remove_ingredient);
+
+            $(".ingredient-product-input").last().autocomplete({
+                source: autocomplete_ingredients,
+                minLength: 2
+            });
+        }
+
+        $('#recipe-form-add-ingredient').on("click", add_ingredient);
+        $('.delete-ingredient-button').on("click", remove_ingredient);
+
+        // autocomplete ingredients product
+        function autocomplete_ingredients(request, response) {
+            $.ajax({
+                url: "http://localhost:8080/search/ingredients",
+                dataType: "json",
+                data: {
+                    product: request.term
+                },
+                success: function (data) {
+                    console.log(data);
+                    response(data);
+                }
+            });
+        }
     });
 </script>
 </body>
