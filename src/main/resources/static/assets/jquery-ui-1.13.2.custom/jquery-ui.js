@@ -1,4 +1,4 @@
-/*! jQuery UI - v1.13.2 - 2022-09-07
+/*! jQuery UI - v1.13.2 - 2022-09-10
 * http://jqueryui.com
 * Includes: widget.js, position.js, keycode.js, unique-id.js, widgets/autocomplete.js, widgets/menu.js
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
@@ -1420,7 +1420,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 				tabIndex: 0
 			} );
 
-		this._addClass( "ui-menu dropdown-menu", "ui-widget ui-widget-content" );
+		this._addClass( "ui-menu", "ui-widget ui-widget-content" );
 		this._on( {
 
 			// Prevent focus from sticking to links inside menu after clicking
@@ -1708,7 +1708,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 					tabIndex: -1,
 					role: this._itemRole()
 				} );
-		this._addClass( newItems, "ui-menu-item dropdown-item" )
+		this._addClass( newItems, "ui-menu-item" )
 			._addClass( newWrappers, "ui-menu-item-wrapper" );
 
 		// Add aria-disabled attribute to any disabled menu item
