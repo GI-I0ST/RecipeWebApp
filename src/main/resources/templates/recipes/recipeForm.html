@@ -6,7 +6,6 @@
 
     <th:block th:insert="~{recipes/index::head/link}">Links</th:block>
     <th:block th:insert="~{recipes/index::head/script}">Scripts</th:block>
-    <script th:src="@{/assets/jquery-ui-1.13.2.custom/jquery-ui.js}"></script>
 </head>
 <body>
 
@@ -348,8 +347,29 @@
 
             $('.delete-ingredient-button').last().on("click", remove_ingredient);
 
+
+            $.extend($.ui.menu.prototype.options.classes, {
+                "ui-menu": "dropdown-menu",
+                "ui-menu-item": "dropdown-item",
+                "ui-menu-item-wrapper": "cursor-pointer"
+            });
+
             $(".ingredient-product-input").last().autocomplete({
-                source: autocomplete_ingredients,
+                source: function (request, response) {
+                    $.ajax({
+                        url: "http://localhost:8080/search/ingredients",
+                        dataType: "json",
+                        data: {
+                            product: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                focus: function (event, ui) {
+                    event.preventDefault();
+                },
                 minLength: 2
             });
         }
@@ -357,20 +377,6 @@
         $('#recipe-form-add-ingredient').on("click", add_ingredient);
         $('.delete-ingredient-button').on("click", remove_ingredient);
 
-        // autocomplete ingredients product
-        function autocomplete_ingredients(request, response) {
-            $.ajax({
-                url: "http://localhost:8080/search/ingredients",
-                dataType: "json",
-                data: {
-                    product: request.term
-                },
-                success: function (data) {
-                    console.log(data);
-                    response(data);
-                }
-            });
-        }
     });
 </script>
 </body>
