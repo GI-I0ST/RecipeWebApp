@@ -88,7 +88,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         newRecipe.getStepsList().forEach(step -> {
             // remove already uploaded image from deletion list
-            if (!step.getImage().isBlank() && step.getImageMultipart().isEmpty()) {
+            if (Objects.nonNull(step.getImage()) && !step.getImage().isBlank() && step.getImageMultipart().isEmpty()) {
                 oldRecipe.getStepsList().removeIf(oldStep -> step.getImage().equals(oldStep.getImage()));
             }
 
