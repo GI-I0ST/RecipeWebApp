@@ -13,13 +13,18 @@ import java.util.List;
 
 
 @Repository
-public class IngredientCustomRepositoryImpl implements IngredientCustomRepository {
+public class AutocompleteIngredientRepositoryImpl implements AutocompleteIngredientRepository {
+    private final EntityManager entityManager;
+    private final CriteriaBuilder criteriaBuilder;
+
     @Autowired
-    private EntityManager entityManager;
+    public AutocompleteIngredientRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+        this.criteriaBuilder = entityManager.getCriteriaBuilder();
+    }
 
     @Override
     public List<String> findProductsContainsStr(String input) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
 
         Root<Ingredient> ingredient = criteriaQuery.from(Ingredient.class);

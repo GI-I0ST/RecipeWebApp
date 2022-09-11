@@ -3,6 +3,6 @@ package com.ghost.recipewebapp.repository;
 import java.util.List;
 
 
-public interface IngredientCustomRepository {
+public interface AutocompleteIngredientRepository {
     List<String> findProductsContainsStr(String input);
 }

@@ -1,8 +1,8 @@
 package com.ghost.recipewebapp.service.impl;
 
 import com.ghost.recipewebapp.entity.Recipe;
-import com.ghost.recipewebapp.repository.IngredientCustomRepository;
-import com.ghost.recipewebapp.repository.IngredientCustomRepositoryImpl;
+import com.ghost.recipewebapp.repository.AutocompleteIngredientRepository;
+import com.ghost.recipewebapp.repository.AutocompleteIngredientRepositoryImpl;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +13,11 @@ import java.util.Map;
 
 @Service
 public class AutocompleteService {
-    private final IngredientCustomRepository ingredientRepository;
+    private final AutocompleteIngredientRepository ingredientRepository;
     private final RecipeRepository recipeRepository;
 
     @Autowired
-    public AutocompleteService(IngredientCustomRepositoryImpl ingredientRepository, RecipeRepository recipeRepository) {
+    public AutocompleteService(AutocompleteIngredientRepositoryImpl ingredientRepository, RecipeRepository recipeRepository) {
         this.ingredientRepository = ingredientRepository;
         this.recipeRepository = recipeRepository;
     }
