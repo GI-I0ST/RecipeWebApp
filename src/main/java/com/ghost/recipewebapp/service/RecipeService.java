@@ -1,13 +1,12 @@
 package com.ghost.recipewebapp.service;
 
 import com.ghost.recipewebapp.entity.Recipe;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface RecipeService {
     Recipe getRecipeById(Long id);
 
-    List<Recipe> getRecipes();
+    Page<Recipe> getRecipesPage(int currentPage, int pageSize);
 
     Long addNewRecipe(Recipe newRecipe);
 

@@ -7,6 +7,9 @@ import com.ghost.recipewebapp.service.RecipeService;
 import com.ghost.recipewebapp.util.FileLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,8 +71,9 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<Recipe> getRecipes() {
-        return recipeRepository.findAll();
+    public Page<Recipe> getRecipesPage(int currentPage, int pageSize) {
+        Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
+        return recipeRepository.findAll(pageable);
     }
 
     @Override
