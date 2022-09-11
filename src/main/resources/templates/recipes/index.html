@@ -130,17 +130,17 @@
                 <!-- Recipe description -->
                 <div class="d-flex flex-column align-items-center w-100">
                     <!-- Title -->
-                    <div>
-                        <h3>
-                            <a class="text-decoration-none" href="#" th:href="@{/recipes/{id}(id=${recipe.id})}"
-                               th:text="${recipe.title}">title for recipe</a>
-                        </h3>
-                        <div class="hstack gap-1">
-                            <p>Author:</p>
-                            <p>John Doe</p>
-                        </div>
-                    </div>
+                    <h3>
+                        <a class="text-decoration-none" href="#" th:href="@{/recipes/{id}(id=${recipe.id})}"
+                           th:text="${recipe.title}">title for recipe</a>
+                    </h3>
                     <!-- Title -->
+                    <!-- Author -->
+                    <div class="d-flex flex-row">
+                        <p class="me-2">Author:</p>
+                        <p>John Doe</p>
+                    </div>
+                    <!-- Author -->
                     <!-- Info row -->
                     <div class="d-flex my-4 flex-wrap">
                         <!-- Time -->
