@@ -370,6 +370,14 @@
                 focus: function (event, ui) {
                     event.preventDefault();
                 },
+                open: function (event, ui) {
+                    let text = $(this).val(),
+                        suggestion = $(this).autocomplete("widget").find("div.ui-menu-item-wrapper");
+
+                    suggestion.each(function () {
+                        $(this).html($(this).text().replace(text, "<b>" + text + "</b>"));
+                    });
+                },
                 minLength: 2
             });
         }
