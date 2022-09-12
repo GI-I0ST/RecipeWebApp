@@ -1,6 +1,7 @@
-package com.ghost.recipewebapp.repository;
+package com.ghost.recipewebapp.repository.impl;
 
 import com.ghost.recipewebapp.entity.Ingredient;
+import com.ghost.recipewebapp.repository.AutocompleteIngredientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

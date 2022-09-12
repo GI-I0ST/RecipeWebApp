@@ -2,8 +2,9 @@ package com.ghost.recipewebapp.service.impl;
 
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.repository.AutocompleteIngredientRepository;
-import com.ghost.recipewebapp.repository.AutocompleteIngredientRepositoryImpl;
+import com.ghost.recipewebapp.repository.impl.AutocompleteIngredientRepositoryImpl;
 import com.ghost.recipewebapp.repository.RecipeRepository;
+import com.ghost.recipewebapp.service.AutocompleteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,17 +13,17 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class AutocompleteService {
+public class AutocompleteServiceImpl implements AutocompleteService {
     private final AutocompleteIngredientRepository ingredientRepository;
     private final RecipeRepository recipeRepository;
 
     @Autowired
-    public AutocompleteService(AutocompleteIngredientRepositoryImpl ingredientRepository, RecipeRepository recipeRepository) {
+    public AutocompleteServiceImpl(AutocompleteIngredientRepository ingredientRepository, RecipeRepository recipeRepository) {
         this.ingredientRepository = ingredientRepository;
         this.recipeRepository = recipeRepository;
     }
 
-    // returns Set of Ingredient.product that contains param string
+    // returns Ingredient.product that contains param string
     public List<String> getProductsContainsStr(String input) {
         return ingredientRepository.findProductsContainsStr(input);
     }

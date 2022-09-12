@@ -1,7 +1,8 @@
 package com.ghost.recipewebapp.controller;
 
-import com.ghost.recipewebapp.service.impl.AutocompleteService;
+import com.ghost.recipewebapp.service.AutocompleteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/search")
 @Validated
+@ComponentScan("com.ghost.service")
 public class AutocompleteController {
     @Autowired
     private AutocompleteService autocompleteService;
