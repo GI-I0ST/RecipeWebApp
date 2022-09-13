@@ -52,6 +52,7 @@
                     placeholder="Search"
                     aria-label="Search"
                     aria-describedby="search-addon"
+                    autocomplete="off"
             />
             <!-- Search box -->
         </form>
@@ -202,67 +203,41 @@
     </div>
     <!-- Recipes list -->
     <!-- Pagination -->
-    <nav th:if="${total_pages > 0}" class="mt-5" aria-label="Page navigation">
+    <nav th:if="${page_numbers}" class="mt-5" aria-label="Page navigation">
         <ul class="pagination justify-content-center">
+            <!-- Page previous -->
             <li class="page-item">
                 <a class="page-link"
                    th:classappend="${first_page} ? 'disabled'"
                    href="#"
-                   th:href="@{recipes(page=${current_page}-1)}"
+                   th:href="@{recipes(page=${page}-1, page_size=${page_size})}"
                    aria-label="Previous"
                 >
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-            <th:block th:if="${total_pages <= 5}">
-                <!-- if less 5 -->
-                <li th:each="page, iStat : ${#numbers.sequence(1, total_pages)}"
-                    class="page-item"
-                    th:classappend="${page == current_page} ? 'active'"
-                >
-                    <a class="page-link" href="#" th:href="@{recipes(page=${page})}"
-                       th:text="${page}">1</a>
-                </li>
-            </th:block>
-            <th:block th:if="${total_pages > 5}">
-                <th:block th:if="${current_page <= 2}">
-                    <li th:each="page, iStat : ${#numbers.sequence(1, 5)}"
-                        class="page-item"
-                        th:classappend="${page == current_page} ? 'active'"
-                    >
-                        <a class="page-link" href="#" th:href="@{recipes(page=${page})}"
-                           th:text="${page}">1</a>
-                    </li>
-                </th:block>
-                <th:block th:if="${current_page >= total_pages - 1}">
-                    <li th:each="page, iStat : ${#numbers.sequence(total_pages - 4, total_pages)}"
-                        class="page-item"
-                        th:classappend="${page == current_page} ? 'active'"
-                    >
-                        <a class="page-link" href="#" th:href="@{recipes(page=${page})}"
-                           th:text="${page}">1</a>
-                    </li>
-                </th:block>
-                <th:block th:if="${(current_page > 2) && (current_page < total_pages - 1)}">
-                    <li th:each="page, iStat : ${#numbers.sequence(current_page - 2, current_page + 2)}"
-                        class="page-item"
-                        th:classappend="${page == current_page} ? 'active'"
-                    >
-                        <a class="page-link" href="#" th:href="@{recipes(page=${page})}"
-                           th:text="${page}">1</a>
-                    </li>
-                </th:block>
-            </th:block>
+            <!-- Page previous -->
+            <!-- Page numbers -->
+            <li th:each="page_number, iStat : ${page_numbers}"
+                class="page-item"
+                th:classappend="${page_number == page} ? 'active'"
+            >
+                <a class="page-link" href="#" th:href="@{recipes(page=${page_number}, page_size=${page_size})}"
+                   th:text="${page_number}">1</a>
+            </li>
+            <!-- Page numbers -->
+            <!-- Page next -->
             <li class="page-item">
                 <a class="page-link"
                    th:classappend="${last_page} ? 'disabled'"
                    href="#"
-                   th:href="@{recipes(page=${current_page}+1)}"
+                   th:href="@{recipes(page=${page}+1, page_size=${page_size})}"
                    aria-label="Next"
                 >
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
+            <!-- Page next -->
         </ul>
     </nav>
     <!-- Pagination -->

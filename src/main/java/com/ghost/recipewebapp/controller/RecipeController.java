@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/recipes")
@@ -24,11 +27,35 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
+    private List<Integer> calculatePageNumbers(Page<?> page, int currentPage) {
+        int totalPages = page.getTotalPages();
+
+        if (totalPages < 5) {
+            return IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+        } else {
+            if (currentPage <= 2) {
+                return IntStream.rangeClosed(1, 5)
+                        .boxed()
+                        .collect(Collectors.toList());
+            } else if (currentPage >= totalPages - 1) {
+                return IntStream.rangeClosed(totalPages - 4, totalPages)
+                        .boxed()
+                        .collect(Collectors.toList());
+            }
+            return IntStream.rangeClosed(currentPage - 2, currentPage + 2)
+                    .boxed()
+                    .collect(Collectors.toList());
+
+        }
+    }
+
     @GetMapping("")
     public String getAllRecipes(Model model,
                                 @RequestParam(value = "page", required = false, defaultValue = "1")
                                         int currentPage,
-                                @RequestParam(value = "page_size", required = false, defaultValue = "10")
+                                @RequestParam(value = "page_size", required = false, defaultValue = "1")
                                         int pageSize) {
         if (currentPage < 1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter page less than 1");
@@ -37,20 +64,22 @@ public class RecipeController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter page_size less than 1");
         }
 
-        Page<Recipe> page = recipeService.getRecipesPage(currentPage, pageSize);
-        int totalPages = page.getTotalPages();
+        Page<Recipe> recipePage = recipeService.getRecipesPage(currentPage, pageSize);
+        int totalPages = recipePage.getTotalPages();
 
         if (currentPage != 1 && currentPage > totalPages) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter page greater than available");
         }
 
-        model.addAttribute("current_page", currentPage);
+        model.addAttribute("recipes", recipePage.getContent());
+
+        model.addAttribute("page_numbers", calculatePageNumbers(recipePage, currentPage));
+        model.addAttribute("page", currentPage);
         model.addAttribute("page_size", pageSize);
         model.addAttribute("total_pages", totalPages);
-        model.addAttribute("total_elements", page.getTotalElements());
-        model.addAttribute("recipes", page.getContent());
-        model.addAttribute("last_page", page.isLast());
-        model.addAttribute("first_page", page.isFirst());
+        model.addAttribute("last_page", recipePage.isLast());
+        model.addAttribute("first_page", recipePage.isFirst());
+
         return "recipes/index";
     }
 
