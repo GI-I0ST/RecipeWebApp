@@ -1,6 +1,7 @@
 package com.ghost.recipewebapp.controller;
 
 import com.ghost.recipewebapp.entity.Recipe;
+import com.ghost.recipewebapp.entity.RecipeSearch;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,54 +32,45 @@ public class RecipeController {
         int totalPages = page.getTotalPages();
 
         if (totalPages < 5) {
-            return IntStream.rangeClosed(1, totalPages)
-                    .boxed()
-                    .collect(Collectors.toList());
+            return IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
         } else {
             if (currentPage <= 2) {
-                return IntStream.rangeClosed(1, 5)
-                        .boxed()
-                        .collect(Collectors.toList());
+                return IntStream.rangeClosed(1, 5).boxed().collect(Collectors.toList());
             } else if (currentPage >= totalPages - 1) {
-                return IntStream.rangeClosed(totalPages - 4, totalPages)
-                        .boxed()
-                        .collect(Collectors.toList());
+                return IntStream.rangeClosed(totalPages - 4, totalPages).boxed().collect(Collectors.toList());
             }
-            return IntStream.rangeClosed(currentPage - 2, currentPage + 2)
-                    .boxed()
-                    .collect(Collectors.toList());
+            return IntStream.rangeClosed(currentPage - 2, currentPage + 2).boxed().collect(Collectors.toList());
 
         }
     }
 
     @GetMapping("")
-    public String getAllRecipes(Model model,
-                                @RequestParam(value = "page", required = false, defaultValue = "1")
-                                        int currentPage,
-                                @RequestParam(value = "page_size", required = false, defaultValue = "1")
-                                        int pageSize) {
-        if (currentPage < 1) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter page less than 1");
-        }
-        if (pageSize < 1) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter page_size less than 1");
-        }
+    public String getRecipesPage(Model model, @Valid @ModelAttribute("recipeSearch") RecipeSearch recipeSearch) {
 
-        Page<Recipe> recipePage = recipeService.getRecipesPage(currentPage, pageSize);
+        int currentPage = recipeSearch.getCurrentPageOrDefault();
+        int pageSize = recipeSearch.getPageSizeOrDefault();
+
+        Page<Recipe> recipePage = recipeService.getRecipesPage(recipeSearch);
         int totalPages = recipePage.getTotalPages();
 
         if (currentPage != 1 && currentPage > totalPages) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter page greater than available");
         }
 
+        // content data
         model.addAttribute("recipes", recipePage.getContent());
 
+        // pagination data
         model.addAttribute("page_numbers", calculatePageNumbers(recipePage, currentPage));
-        model.addAttribute("page", currentPage);
+        model.addAttribute("current_page", currentPage);
         model.addAttribute("page_size", pageSize);
-        model.addAttribute("total_pages", totalPages);
         model.addAttribute("last_page", recipePage.isLast());
         model.addAttribute("first_page", recipePage.isFirst());
+
+        //link base
+        model.addAttribute("filters_url_params", recipeSearch.getFilterParams());
+        model.addAttribute("page_size_url_param", recipeSearch.getPageSizeParam());
+        model.addAttribute("current_page_url_param", recipeSearch.getCurrentPageParam());
 
         return "recipes/index";
     }
@@ -87,19 +79,19 @@ public class RecipeController {
     public String getRecipeById(@PathVariable Long id, Model model) {
         Recipe recipe = recipeService.getRecipeById(id);
         model.addAttribute("recipe", recipe);
+        model.addAttribute("recipeSearch", new RecipeSearch());
         return "recipes/recipePage";
     }
 
     @GetMapping("/new")
     public String getRecipeCreationForm(Model model) {
         model.addAttribute("recipe", new Recipe());
+        model.addAttribute("recipeSearch", new RecipeSearch());
         return "recipes/recipeForm";
     }
 
     @PostMapping(value = "/new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String addNewRecipe(@Valid @ModelAttribute("recipe") Recipe newRecipe,
-                               BindingResult bindingResult,
-                               Model model) {
+    public String addNewRecipe(@Valid @ModelAttribute("recipe") Recipe newRecipe, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
             return "recipes/recipeForm";
@@ -113,6 +105,7 @@ public class RecipeController {
     public String getRecipeEditForm(@PathVariable Long id, Model model) {
         Recipe recipe = recipeService.getRecipeById(id);
         model.addAttribute("recipe", recipe);
+        model.addAttribute("recipeSearch", new RecipeSearch());
 
         return "recipes/recipeForm";
     }

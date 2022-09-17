@@ -19,6 +19,9 @@ body {
 
 .container {
     background-color: #fff;
+}
+
+.w-65{
     width: 65%;
 }
 
