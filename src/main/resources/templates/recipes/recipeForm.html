@@ -11,7 +11,7 @@
 
 <th:block th:insert="~{recipes/index::navbar}">Navbar</th:block>
 
-<div class="container my-5 py-3 px-5 shadow">
+<div class="container w-75 my-5 py-3 px-5 shadow">
     <form id="recipe-form"
           th:method="((${recipe.id}) ? 'PUT' : 'POST')"
           th:action="@{/recipes/{postfix}(postfix=${recipe.id} ? ${recipe.id} : 'new')}"

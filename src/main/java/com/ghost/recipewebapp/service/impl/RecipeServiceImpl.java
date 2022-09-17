@@ -3,6 +3,8 @@ package com.ghost.recipewebapp.service.impl;
 import com.ghost.recipewebapp.entity.AbstractMultipartImageEntity;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.repository.RecipeRepository;
+import com.ghost.recipewebapp.entity.RecipeSearch;
+import com.ghost.recipewebapp.repository.specification.RecipeSpecifications;
 import com.ghost.recipewebapp.service.RecipeService;
 import com.ghost.recipewebapp.util.FileLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +12,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -71,9 +73,17 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Page<Recipe> getRecipesPage(int currentPage, int pageSize) {
-        Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
-        return recipeRepository.findAll(pageable);
+    public Page<Recipe> getRecipesPage(RecipeSearch recipeSearch) {
+        Pageable pageable = PageRequest.of(recipeSearch.getCurrentPageOrDefault() - 1,
+                recipeSearch.getPageSizeOrDefault());
+
+        Specification<Recipe> spec = Specification.where(RecipeSpecifications.likeTitle(recipeSearch.getTitle()))
+                .and(RecipeSpecifications.withImage(recipeSearch.getImage()))
+                .and(RecipeSpecifications.timeLessOrEqual(recipeSearch.getTime()))
+                .and(RecipeSpecifications.caloriesLessOrEqual(recipeSearch.getCalories()))
+                .and(RecipeSpecifications.containsProducts(recipeSearch.getProducts()));
+
+        return recipeRepository.findAll(spec, pageable);
     }
 
     @Override
