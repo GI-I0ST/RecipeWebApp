@@ -94,6 +94,7 @@ public class RecipeController {
     public String addNewRecipe(@Valid @ModelAttribute("recipe") Recipe newRecipe, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
+            model.addAttribute("recipeSearch", new RecipeSearch());
             return "recipes/recipeForm";
         }
 
