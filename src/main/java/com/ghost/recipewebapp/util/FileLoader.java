@@ -1,7 +1,6 @@
 package com.ghost.recipewebapp.util;
 
-import com.ghost.recipewebapp.exception.EnvVarNotFoundException;
-import com.ghost.recipewebapp.exception.FileUploadException;
+import com.ghost.recipewebapp.exception.FileLoaderException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -23,11 +22,21 @@ public class FileLoader {
 
     @Autowired
     public FileLoader(Environment env) {
-        String path = env.getProperty("UPLOADS_RESOURCE_PATH");
-        if (Objects.isNull(path)) {
-            throw new EnvVarNotFoundException("Environment variable 'UPLOADS_RESOURCE_PATH' not found");
+        String path_str = env.getProperty("UPLOADS_RESOURCE_PATH");
+
+        // if env variable exists
+        if (Objects.isNull(path_str)) {
+            throw new FileLoaderException("Environment variable 'UPLOADS_RESOURCE_PATH' not found");
         }
-        UPLOAD_DIRECTORY = Path.of(path, "uploadedImages").toString();
+
+
+        Path path = Path.of(path_str, "uploadedImages").normalize().toAbsolutePath();
+        // if UPLOADS_RESOURCE_PATH exists and is directory
+        if (!Files.isDirectory(path)) {
+            throw new FileLoaderException("Directory " + path.toAbsolutePath() + " is not found");
+        }
+
+        UPLOAD_DIRECTORY = path.toString();
     }
 
     public String uploadFile(MultipartFile file) {
@@ -39,7 +48,7 @@ public class FileLoader {
             File transferFile = new File(UPLOAD_DIRECTORY, newName);
             file.transferTo(transferFile);
         } catch (IOException e) {
-            throw new FileUploadException("File " + file.getOriginalFilename() + " failed while uploading", e);
+            throw new FileLoaderException("File " + file.getOriginalFilename() + " failed while uploading", e);
         }
 
         return newName;

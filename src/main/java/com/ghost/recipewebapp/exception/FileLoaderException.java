@@ -4,16 +4,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public class EnvVarNotFoundException extends RuntimeException{
-    public EnvVarNotFoundException(String message) {
+public class FileLoaderException extends RuntimeException{
+    public FileLoaderException(String message) {
         super(message);
     }
 
-    public EnvVarNotFoundException(String message, Throwable cause) {
+    public FileLoaderException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public EnvVarNotFoundException(Throwable cause) {
+    public FileLoaderException(Throwable cause) {
         super(cause);
     }
 }
