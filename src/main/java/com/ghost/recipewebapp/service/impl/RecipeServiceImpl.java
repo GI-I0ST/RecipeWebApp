@@ -3,7 +3,7 @@ package com.ghost.recipewebapp.service.impl;
 import com.ghost.recipewebapp.entity.AbstractMultipartImageEntity;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.repository.RecipeRepository;
-import com.ghost.recipewebapp.entity.RecipeSearch;
+import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.repository.specification.RecipeSpecifications;
 import com.ghost.recipewebapp.service.RecipeService;
 import com.ghost.recipewebapp.util.FileLoader;

@@ -1,7 +1,7 @@
 package com.ghost.recipewebapp.service;
 
 import com.ghost.recipewebapp.entity.Recipe;
-import com.ghost.recipewebapp.entity.RecipeSearch;
+import com.ghost.recipewebapp.dto.RecipeSearch;
 import org.springframework.data.domain.Page;
 
 public interface RecipeService {

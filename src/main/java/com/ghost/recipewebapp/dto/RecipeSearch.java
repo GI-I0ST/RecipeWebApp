@@ -1,4 +1,4 @@
-package com.ghost.recipewebapp.entity;
+package com.ghost.recipewebapp.dto;
 
 import lombok.*;
 
@@ -7,7 +7,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-
+// Uses to represent recipe in search
+// Not saves in database
 @Setter
 @Getter
 @NoArgsConstructor

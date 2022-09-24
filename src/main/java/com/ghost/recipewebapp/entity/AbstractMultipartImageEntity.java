@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+// Abstract class for entities with field uses MultipartFile for image
 @NoArgsConstructor
 @Setter
 @Getter
