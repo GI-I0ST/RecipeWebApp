@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <th:block th:insert="~{recipes/index::head/link}">Links</th:block>
+    <th:block th:insert="~{recipes/index::head/script}">Scripts</th:block>
+</head>
+<body>
+
+<th:block th:insert="~{recipes/index::navbar}">Navbar</th:block>
+
+<div class="container w-75 my-5 py-3 px-5 shadow rounded">
+    <div class="row gap-4">
+        <!-- Left side -->
+        <div class="col d-flex flex-column">
+            <div class="d-flex justify-content-center mb-3">
+                <h1 class="text-danger fw-bold">Sign up</h1>
+            </div>
+            <div class="d-flex flex-column justify-content-center flex-grow-1">
+                <form th:action="@{/register}" th:method="POST" th:object="${user}">
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label">Email:</label>
+                        <input class="form-control" type="text" th:field="*{email}"
+                               th:classappend="${errorForm} ? (${#fields.hasErrors('email')} ? 'is-invalid' : 'is-valid')"/>
+
+                        <!-- Email errors -->
+                        <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}"></div>
+                        <!-- Email errors -->
+                    </div>
+                    <!-- Email -->
+                    <!-- First Name -->
+                    <div class="mb-3">
+                        <label class="form-label">First Name:</label>
+                        <input class="form-control" type="text" th:field="*{firstName}"
+                               th:classappend="${errorForm} ? (${#fields.hasErrors('firstName')} ? 'is-invalid' : 'is-valid')"/>
+
+                        <!-- First Name errors -->
+                        <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('firstName')}"
+                             th:errors="*{firstName}"></div>
+                        <!-- First Name errors -->
+                    </div>
+                    <!-- First Name -->
+                    <!-- Last Name -->
+                    <div class="mb-3">
+                        <label class="form-label">Last Name:</label>
+                        <input class="form-control" type="text" th:field="*{lastName}"
+                               th:classappend="${errorForm} ? (${#fields.hasErrors('lastName')} ? 'is-invalid' : 'is-valid')"/>
+
+                        <!-- Last Name errors -->
+                        <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('lastName')}"
+                             th:errors="*{lastName}"></div>
+                        <!-- Last Name errors -->
+                    </div>
+                    <!-- Last Name -->
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label">Password:</label>
+                        <input class="form-control" type="password" th:field="*{password}"
+                               th:classappend="${errorForm} ? (${#fields.hasErrors('password')} ? 'is-invalid')"/>
+
+                        <!-- Password errors -->
+                        <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('password')}"
+                             th:errors="*{password}"></div>
+                        <!-- Password errors -->
+                    </div>
+                    <!-- Password -->
+                    <!-- Confirm password -->
+                    <div class="mb-3">
+                        <label class="form-label">Confirm password:</label>
+                        <input class="form-control" type="password" th:field="*{passwordConfirm}"
+                               th:classappend="${errorForm} ? (${#fields.hasErrors('passwordConfirm')} ? 'is-invalid')"/>
+
+                        <!-- Confirm password errors -->
+                        <div class="alert alert-warning mt-1" th:if="${#fields.hasErrors('passwordConfirm')}"
+                             th:errors="*{passwordConfirm}"></div>
+                        <!-- Confirm password errors -->
+                    </div>
+                    <!-- Confirm password -->
+                    <!-- Sign up button -->
+                    <div>
+                        <button class="btn btn-primary btn-lg" type="submit">Sign up</button>
+                    </div>
+                    <!-- Sign up button -->
+                </form>
+            </div>
+        </div>
+        <!-- Left side -->
+        <!-- Right side -->
+        <th:block th:insert="~{auth/login::loginCompanyInfo}">Company info</th:block>
+        <!-- Right side -->
+    </div>
+</div>
+
+<th:block th:insert="~{recipes/index::footer}">Footer</th:block>
+
+<th:block th:insert="~{recipes/index::search_box_script}">Search-box script</th:block>
+
+</body>
+
+</html>

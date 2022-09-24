@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <th:block th:insert="~{recipes/index::head/link}">Links</th:block>
+    <th:block th:insert="~{recipes/index::head/script}">Scripts</th:block>
+</head>
+<body>
+
+<th:block th:insert="~{recipes/index::navbar}">Navbar</th:block>
+
+<div class="container w-75 my-5 py-3 px-5 shadow rounded">
+    <div class="row gap-4">
+        <!-- Left side -->
+        <div th:fragment="loginCompanyInfo" class="col">
+            <!-- Logo image -->
+            <div class="row-cols-2 d-flex justify-content-center">
+                <img src="/assets/images/logo.png" class="img-fluid me-5" alt="Well cook logo">
+            </div>
+            <!-- Logo image -->
+            <!-- Logo text -->
+            <div class="row">
+                <h1 class="display-3 fw-bold ls-tight text-logo">
+                    <span class="text-nowrap">World's recipes</span>
+                    <span class="text-danger text-nowrap">Best delicious</span>
+                </h1>
+                <p class="fs-5">Share your original taste and discover the world's cuisine</p>
+            </div>
+            <!-- Logo text -->
+        </div>
+        <!-- Left side -->
+        <!-- Right side -->
+        <div class="col d-flex flex-column">
+            <div class="d-flex justify-content-center mb-3">
+                <h1 class="text-danger fw-bold">Login</h1>
+            </div>
+            <div class="d-flex flex-column justify-content-center flex-grow-1">
+                <!-- Sign in with -->
+                <div class="d-flex flex-row align-items-center justify-content-center mb-3">
+                    <p class="lead fw-normal mb-0 me-3">Sign in with:</p>
+                    <!-- Facebook -->
+                    <a class="btn btn-primary btn-floating mx-1 rounded-5" href="#">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <!-- Facebook -->
+                    <!-- Google -->
+                    <a class="btn btn-primary btn-floating mx-1 rounded-5" href="#">
+                        <i class="bi bi-google"></i>
+                    </a>
+                    <!-- Google -->
+                    <!-- Twitter -->
+                    <a class="btn btn-primary btn-floating mx-1 rounded-5" href="#">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <!-- Twitter -->
+                </div>
+                <!-- Sign in with -->
+
+                <!-- Delimiter -->
+                <div class="d-flex flex-row justify-content-center align-items-end mb-3">
+                    <hr class="m-0 w-25 hr-shadow">
+                    <p class="mx-3 mb-0">Or</p>
+                    <hr class="m-0 w-25 hr-shadow">
+                </div>
+                <!-- Delimiter -->
+
+                <!-- Errors -->
+                <div class="alert alert-warning mt-1" th:if="${param.error}">
+                    Invalid username or password
+                </div>
+                <!-- Errors -->
+
+                <form th:action="@{/login}" method="post">
+                    <!-- Username input -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="loginUsernameLabel">Email</span>
+                        </div>
+                        <input type="text" th:classappend="${param.error}?'is-invalid'" name="username"
+                               class="form-control" aria-describedby="loginUsernameLabel">
+                    </div>
+                    <!-- Username input -->
+
+                    <!-- Password input -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="loginPasswordLabel">Password</span>
+                        </div>
+                        <input type="password" th:classappend="${param.error}?'is-invalid'" name="password"
+                               class="form-control" aria-describedby="loginPasswordLabel">
+                    </div>
+                    <!-- Password input -->
+
+                    <!-- Remember me / Forgot password -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check mb-0">
+                            <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3"/>
+                            <label class="form-check-label" for="form2Example3">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="text-body">Forgot password?</a>
+                    </div>
+                    <!-- Remember me / Forgot password -->
+
+                    <!-- Login button -->
+                    <div class="d-flex justify-content-center mb-3">
+                        <input class="btn btn-primary btn-lg" type="submit" value="Login"/>
+                    </div>
+                    <!-- Login button -->
+                </form>
+
+                <!-- Register link -->
+                <div>
+                    <p class="small fw-bold mt-2 pt-1 mb-0">
+                        Don't have an account?
+                        <a th:href="@{register}" class="link-danger">Register</a>
+                    </p>
+                </div>
+                <!-- Register link -->
+            </div>
+        </div>
+        <!-- Right side -->
+    </div>
+</div>
+
+<th:block th:insert="~{recipes/index::footer}">Footer</th:block>
+
+<th:block th:insert="~{recipes/index::search_box_script}">Search-box script</th:block>
+
+</body>
+
+</html>

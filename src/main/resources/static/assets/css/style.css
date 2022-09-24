@@ -112,3 +112,7 @@ body {
 .cursor-pointer {
     cursor: pointer;
 }
+
+.text-logo {
+    text-shadow: 10px 5px 9px rgb(0 0 0 / 50%);
+}

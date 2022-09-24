@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout</title>
+
+    <th:block th:insert="~{recipes/index::head/link}">Links</th:block>
+    <th:block th:insert="~{recipes/index::head/script}">Scripts</th:block>
+</head>
+<body>
+
+<th:block th:insert="~{recipes/index::navbar}">Navbar</th:block>
+
+<div class="container w-75 my-5 py-3 px-5 shadow rounded text-center">
+    <h1 class="display-3 fw-bold ls-tight mb-5">
+        Hello <span class="text-danger text-logo">[[${#httpServletRequest.remoteUser}]]</span>!<br>Do you want log out?
+    </h1>
+
+    <form th:action="@{/logout}" method="post">
+        <input class="btn btn-primary btn-lg" type="submit" value="Log out"/>
+    </form>
+</div>
+
+<th:block th:insert="~{recipes/index::footer}">Footer</th:block>
+
+<th:block th:insert="~{recipes/index::search_box_script}">Search-box script</th:block>
+
+</body>
+
+</html>

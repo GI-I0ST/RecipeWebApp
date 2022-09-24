@@ -1,14 +1,10 @@
 package com.ghost.recipewebapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -19,50 +15,65 @@ import java.util.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
-    @Email
-    @NotBlank
     private String email;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 8, max = 30)
-    @NotBlank
     private String password;
 
-    @Column(name = "name")
-    @NotBlank
+    @Column(name = "name", nullable = false)
     private String name;
 
-    /*
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore
-    private List<Recipe> recipes = new ArrayList<>();
+    @Column(name = "authorities")
+    private String authorities;
 
-    @ManyToMany
-    @JoinTable(name = "users_recipes",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "recipes_id"))
-    @JsonIgnore
-    private Set<Recipe> savedRecipes = new LinkedHashSet<>();
-     */
+    // For future improvement
+    /*
+    public void setAuthorities(String authorities) {
+        this.authorities = authorities;
+        this.authoritiesSet = new HashSet<>(AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
+    }
+
+    @Transient
+    private Set<GrantedAuthority> authoritiesSet = new HashSet<>();
+
+    public void setAuthoritiesSet(Collection<? extends GrantedAuthority> authoritiesCollection) {
+        this.authoritiesSet = new HashSet<>(authoritiesSet);
+        this.authorities = authoritiesCollectionToString(authoritiesSet);
+    }
+
+    public void addAuthority(GrantedAuthority authority) {
+        if (this.authoritiesSet.add(authority)) {
+            this.authorities = authoritiesCollectionToString(authoritiesSet);
+        }
+    }
+
+    public void removeAuthority(GrantedAuthority authority) {
+        if (this.authoritiesSet.remove(authority)) {
+            this.authorities = authoritiesCollectionToString(authoritiesSet);
+        }
+    }
+
+    private String authoritiesCollectionToString(Collection<? extends GrantedAuthority> authoritiesCollection) {
+        return authoritiesCollection.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
+    */
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        User user = (User) o;
-        return id != null && Objects.equals(id, user.id);
+        User that = (User) o;
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
         return getClass().hashCode();
     }
-
-
 }
