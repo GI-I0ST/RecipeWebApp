@@ -5,6 +5,9 @@ import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,8 +27,18 @@ public class AuthController {
         this.userService = userService;
     }
 
+    private boolean checkUserAuth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && !(authentication instanceof AnonymousAuthenticationToken);
+    }
+
     @GetMapping("/login")
     public String getLoginPage(Model model) {
+        // if user authenticated
+        if (checkUserAuth()) {
+            return "redirect:/recipes";
+        }
+
         model.addAttribute("recipeSearch", new RecipeSearch());
         return "auth/login";
     }
@@ -38,6 +51,11 @@ public class AuthController {
 
     @GetMapping("/register")
     public String getRegisterPage(Model model) {
+        // if user authenticated
+        if (checkUserAuth()) {
+            return "redirect:/recipes";
+        }
+
         model.addAttribute("user", new NewUserDto());
         model.addAttribute("recipeSearch", new RecipeSearch());
         return "auth/register";
@@ -45,6 +63,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("user") NewUserDto newUserDto, BindingResult result, Model model) {
+        // if user authenticated
+        if (checkUserAuth()) {
+            return "redirect:/recipes";
+        }
+
         Optional<User> existingUser = userService.findUserByEmail(newUserDto.getEmail());
 
         if (existingUser.isPresent()) {
