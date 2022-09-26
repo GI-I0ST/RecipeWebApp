@@ -1,6 +1,7 @@
 package com.ghost.recipewebapp.repository.impl;
 
 import com.ghost.recipewebapp.entity.Ingredient;
+import com.ghost.recipewebapp.entity.metaModel.Ingredient_;
 import com.ghost.recipewebapp.repository.AutocompleteIngredientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -30,12 +31,12 @@ public class AutocompleteIngredientRepositoryImpl implements AutocompleteIngredi
 
         Root<Ingredient> ingredient = criteriaQuery.from(Ingredient.class);
 
-        Predicate like = criteriaBuilder.like(criteriaBuilder.lower(ingredient.get("product")),
+        Predicate like = criteriaBuilder.like(criteriaBuilder.lower(ingredient.get(Ingredient_.PRODUCT)),
                 "%" + input.toLowerCase() + "%");
-        criteriaQuery.select(ingredient.get("product"))
+        criteriaQuery.select(ingredient.get(Ingredient_.PRODUCT))
                 .where(like)
-                .groupBy(ingredient.get("product"))
-                .orderBy(criteriaBuilder.asc(ingredient.get("product")));
+                .groupBy(ingredient.get(Ingredient_.PRODUCT))
+                .orderBy(criteriaBuilder.asc(ingredient.get(Ingredient_.PRODUCT)));
 
         return entityManager.createQuery(criteriaQuery).setMaxResults(10).getResultList();
     }
