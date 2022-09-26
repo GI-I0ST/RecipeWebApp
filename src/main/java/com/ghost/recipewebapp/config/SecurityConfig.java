@@ -22,6 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                     .mvcMatchers("/recipes/new").authenticated()
                     .mvcMatchers(HttpMethod.GET, "/recipes", "/recipes/*").permitAll()
+                    .mvcMatchers(HttpMethod.GET, "/search/*").permitAll()
                     .mvcMatchers("/register").permitAll()
                     .anyRequest().authenticated()
                 .and()
