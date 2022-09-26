@@ -1,19 +1,13 @@
 package com.ghost.recipewebapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import javax.validation.constraints.*;
+import java.util.*;
 
 @Getter
 @Setter
@@ -25,8 +19,6 @@ public class Recipe extends AbstractMultipartImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
     private Long id;
 
     // image name

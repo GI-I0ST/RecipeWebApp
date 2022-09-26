@@ -1,6 +1,5 @@
 package com.ghost.recipewebapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -18,8 +17,6 @@ public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
     private Long id;
 
     @NotBlank(message = "Product is required")

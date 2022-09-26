@@ -18,8 +18,6 @@ public class Comment{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
     private Long id;
 
     @Column(name = "text")

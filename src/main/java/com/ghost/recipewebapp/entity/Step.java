@@ -1,6 +1,5 @@
 package com.ghost.recipewebapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,8 +20,6 @@ public class Step extends AbstractMultipartImageEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
-    @ToString.Exclude
     private Long id;
 
     @Column(name = "text")
