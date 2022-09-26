@@ -76,14 +76,26 @@
                 <div class="vr h-50"></div>
             </div>
 
-            <!-- Login link -->
+            <th:block sec:authorize="isAnonymous()">
+                <!-- Login link -->
+                <li class="nav-item hover-underline-animation">
+                    <a class="nav-link active" th:href="@{/login}">
+                        <i class="bi bi-person"></i>
+                        Login
+                    </a>
+                </li>
+                <!-- Login link -->
+            </th:block>
+            <th:block sec:authorize="isAuthenticated()">
+            <!-- Logout link -->
             <li class="nav-item hover-underline-animation">
-                <a class="nav-link active" th:href="@{/login}">
+                <a class="nav-link active" th:href="@{/logout}">
                     <i class="bi bi-person"></i>
-                    Login
+                    Logout
                 </a>
             </li>
-            <!-- Login link -->
+            <!-- Logout link -->
+            </th:block>
 
             <div class="d-flex flex-column justify-content-center">
                 <div class="vr h-50"></div>
