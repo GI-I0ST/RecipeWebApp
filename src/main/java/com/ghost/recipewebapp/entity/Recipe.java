@@ -2,11 +2,13 @@ package com.ghost.recipewebapp.entity;
 
 import lombok.*;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Formula;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.*;
 
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @ToString
@@ -44,6 +46,11 @@ public class Recipe {
     //comments to recipe
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentsList = new ArrayList<>();
+
+    @CreatedBy
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private User author;
 
     @Override
     public boolean equals(Object o) {

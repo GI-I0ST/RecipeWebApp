@@ -3,6 +3,8 @@ package com.ghost.recipewebapp.service.impl;
 import com.ghost.recipewebapp.dto.RecipeDto;
 import com.ghost.recipewebapp.entity.MultipartImageEntity;
 import com.ghost.recipewebapp.entity.Recipe;
+import com.ghost.recipewebapp.entity.User;
+import com.ghost.recipewebapp.entity.UserDetailsImpl;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.repository.specification.RecipeSpecifications;
@@ -15,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,6 +45,7 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDto.setHours(recipe.getTime() / 60);
         recipeDto.setMinutes(recipe.getTime() % 60);
         recipeDto.setCalories(recipe.getCalories());
+        recipeDto.setAuthor(recipe.getAuthor().getName());
 
         recipeDto.getIngredientsList().addAll(recipe.getIngredientsList());
         recipeDto.getStepsList().addAll(recipe.getStepsList());
