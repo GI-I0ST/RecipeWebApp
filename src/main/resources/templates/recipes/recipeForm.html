@@ -65,19 +65,18 @@
                     <input type="number" inputmode="numeric" min="0" max="168" th:field="${recipe.hours}"
                            id="recipe-form-hours"
                            class="form-control me-1 w-25"
-                           th:classappend="${errorForm} ? (${#fields.hasErrors('time') || #fields.hasErrors('hours') || #fields.hasErrors('minutes')} ? 'is-invalid' : 'is-valid')"/>
+                           th:classappend="${errorForm} ? (${#fields.hasErrors('hours') || #fields.hasErrors('minutes')} ? 'is-invalid' : 'is-valid')"/>
                     <p class="mb-0">h</p>
                     <input type="number" inputmode="numeric" min="0" max="59" th:field="${recipe.minutes}"
                            id="recipe-form-minutes"
                            class="form-control ms-4 me-1 w-25"
-                           th:classappend="${errorForm} ? (${#fields.hasErrors('time') || #fields.hasErrors('hours') || #fields.hasErrors('minutes')} ? 'is-invalid' : 'is-valid')"/>
+                           th:classappend="${errorForm} ? (${#fields.hasErrors('hours') || #fields.hasErrors('minutes')} ? 'is-invalid' : 'is-valid')"/>
                     <p class="mb-0">min</p>
                 </div>
 
                 <!-- Time errors -->
                 <div class="alert alert-warning mt-1"
-                     th:if="${#fields.hasErrors('time') || #fields.hasErrors('hours') || #fields.hasErrors('minutes')}">
-                    <div th:errors="*{time}"></div>
+                     th:if="${#fields.hasErrors('hours') || #fields.hasErrors('minutes')}">
                     <div th:errors="*{hours}"></div>
                     <div th:errors="*{minutes}"></div>
                 </div>

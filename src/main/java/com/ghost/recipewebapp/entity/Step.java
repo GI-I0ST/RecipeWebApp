@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,7 +17,7 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "steps")
-public class Step extends AbstractMultipartImageEntity {
+public class Step implements MultipartImageEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,6 +30,9 @@ public class Step extends AbstractMultipartImageEntity {
     //images for step
     @Column(name = "image")
     private String image;
+
+    @Transient
+    private MultipartFile imageMultipart;
 
     @Override
     public boolean equals(Object o) {

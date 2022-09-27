@@ -1,6 +1,6 @@
 package com.ghost.recipewebapp.controller;
 
-import com.ghost.recipewebapp.entity.Recipe;
+import com.ghost.recipewebapp.dto.RecipeDto;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -50,11 +49,11 @@ public class RecipeController {
         int currentPage = recipeSearch.getCurrentPageOrDefault();
         int pageSize = recipeSearch.getPageSizeOrDefault();
 
-        Page<Recipe> recipePage = recipeService.getRecipesPage(recipeSearch);
+        Page<RecipeDto> recipePage = recipeService.getRecipesPage(recipeSearch);
         int totalPages = recipePage.getTotalPages();
 
-        if (currentPage != 1 && currentPage > totalPages) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter page greater than available");
+        if (currentPage > totalPages) {
+            currentPage = 1;
         }
 
         // content data
@@ -77,7 +76,7 @@ public class RecipeController {
 
     @GetMapping("/{id}")
     public String getRecipeById(@PathVariable Long id, Model model) {
-        Recipe recipe = recipeService.getRecipeById(id);
+        RecipeDto recipe = recipeService.getRecipeById(id);
         model.addAttribute("recipe", recipe);
         model.addAttribute("recipeSearch", new RecipeSearch());
         return "recipes/recipePage";
@@ -85,13 +84,13 @@ public class RecipeController {
 
     @GetMapping("/new")
     public String getRecipeCreationForm(Model model) {
-        model.addAttribute("recipe", new Recipe());
+        model.addAttribute("recipe", new RecipeDto());
         model.addAttribute("recipeSearch", new RecipeSearch());
         return "recipes/recipeForm";
     }
 
     @PostMapping(value = "/new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String addNewRecipe(@Valid @ModelAttribute("recipe") Recipe newRecipe, BindingResult bindingResult, Model model) {
+    public String addNewRecipe(@Valid @ModelAttribute("recipe") RecipeDto newRecipe, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
             model.addAttribute("recipeSearch", new RecipeSearch());
@@ -104,7 +103,7 @@ public class RecipeController {
 
     @GetMapping("/{id}/edit")
     public String getRecipeEditForm(@PathVariable Long id, Model model) {
-        Recipe recipe = recipeService.getRecipeById(id);
+        RecipeDto recipe = recipeService.getRecipeById(id);
         model.addAttribute("recipe", recipe);
         model.addAttribute("recipeSearch", new RecipeSearch());
 
@@ -112,12 +111,11 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
-    public String editRecipe(@PathVariable Long id, @Valid @ModelAttribute("recipe") Recipe newRecipe, BindingResult bindingResult, Model model) {
+    public String editRecipe(@PathVariable Long id, @Valid @ModelAttribute("recipe") RecipeDto newRecipe, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
             return "recipes/recipeForm";
         }
-
         newRecipe.setId(id);
         recipeService.editRecipe(newRecipe);
         return "redirect:/recipes/" + id;
