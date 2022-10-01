@@ -126,4 +126,20 @@ public class RecipeController {
         recipeService.deleteRecipeById(id);
         return "redirect:/recipes";
     }
+
+    @PostMapping("/{id}/favourites")
+    @ResponseBody
+    public HttpStatus addRecipeToFavourites(@PathVariable Long id) {
+        recipeService.addToFavourites(id);
+
+        return HttpStatus.OK;
+    }
+
+    @DeleteMapping("/{id}/favourites")
+    @ResponseBody
+    public HttpStatus deleteRecipeFromFavourites(@PathVariable Long id) {
+        recipeService.removeFromFavourites(id);
+
+        return HttpStatus.OK;
+    }
 }

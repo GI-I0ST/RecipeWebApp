@@ -16,6 +16,9 @@
     <link rel="stylesheet" type="text/css" th:href="@{/assets/jquery-ui-1.13.2.custom/jquery-ui.min.css}"/>
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" th:href="@{/assets/css/style.css}"/>
+
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <!-- Navbar -->
@@ -65,10 +68,18 @@
         <ul class="navbar-nav ms-auto mb-0 flex-row hstack gap-3">
             <!-- Favourites link -->
             <li class="nav-item hover-underline-animation">
-                <a class="nav-link active" th:href="@{/recipes}">
-                    <i class="bi bi-bookmark-heart"></i>
-                    Favourites
-                </a>
+                <th:block sec:authorize="isAnonymous()">
+                    <a class="nav-link active" th:href="@{/login}">
+                        <i class="bi bi-bookmark-heart"></i>
+                        Favourites
+                    </a>
+                </th:block>
+                <th:block sec:authorize="isAuthenticated()">
+                    <a class="nav-link active" th:href="@{/recipes?inFavourites=on}">
+                        <i class="bi bi-bookmark-heart"></i>
+                        Favourites
+                    </a>
+                </th:block>
             </li>
             <!-- Favourites link -->
 
@@ -87,14 +98,14 @@
                 <!-- Login link -->
             </th:block>
             <th:block sec:authorize="isAuthenticated()">
-            <!-- Logout link -->
-            <li class="nav-item hover-underline-animation">
-                <a class="nav-link active" th:href="@{/logout}">
-                    <i class="bi bi-person"></i>
-                    Logout
-                </a>
-            </li>
-            <!-- Logout link -->
+                <!-- Logout link -->
+                <li class="nav-item hover-underline-animation">
+                    <a class="nav-link active" th:href="@{/logout}">
+                        <i class="bi bi-person"></i>
+                        Logout
+                    </a>
+                </li>
+                <!-- Logout link -->
             </th:block>
 
             <div class="d-flex flex-column justify-content-center">
@@ -193,19 +204,24 @@
                         <!-- Info row -->
                         <!-- Button block -->
                         <div>
-                            <!-- Button Add to Favourites -->
-                            <button class="btn btn-outline-success">
-                                <i class="bi bi-bookmark-heart"></i>
-                                Add to Favourites
-                            </button>
-                            <!-- Button Add to Favourites -->
-
-                            <!-- Button Remove from Favourites -->
-                            <button class="btn btn-outline-danger">
-                                <i class="bi bi-bookmark-x-fill"></i>
-                                Remove from Favourites
-                            </button>
-                            <!-- Button Add to Favourites -->
+                            <th:block th:unless="${recipe.favourite}">
+                                <!-- Button Add to Favourites -->
+                                <button class="btn btn-outline-success addToFavouriteButton"
+                                        th:attr="recipe=${recipe.id}">
+                                    <i class="bi bi-bookmark-heart"></i>
+                                    Add to Favourites
+                                </button>
+                                <!-- Button Add to Favourites -->
+                            </th:block>
+                            <th:block th:if="${recipe.favourite}">
+                                <!-- Button Remove from Favourites -->
+                                <button class="btn btn-outline-danger removeFromFavouriteButton"
+                                        th:attr="recipe=${recipe.id}">
+                                    <i class="bi bi-bookmark-x-fill"></i>
+                                    Remove from Favourites
+                                </button>
+                                <!-- Button Add to Favourites -->
+                            </th:block>
                         </div>
                         <!-- Button block -->
                     </div>
@@ -265,86 +281,110 @@
     <div class="container w-25 py-3 px-4 shadow me-2 ms-0 rounded">
         <form id="recipeSearchForm" th:method="GET" th:object="${recipeSearch}" th:action="@{recipes}">
             <!-- Page settings -->
-            <div class="d-flex justify-content-center">
-                <h4>Page settings</h4>
-            </div>
-            <!-- Page size -->
             <div>
-                <h5 class="px-4">Page size</h5>
-                <div class="d-flex flex-row align-items-center">
-                    <label class="form-label text-nowrap mb-0" for="pageSizeInput">Display</label>
-                    <input type="number" inputmode="numeric" min="0" max="100" class="form-control ms-3 w-50"
-                           id="pageSizeInput"
-                           th:field="${recipeSearch.pageSize}">
+                <div class="d-flex justify-content-center">
+                    <h4>Page settings</h4>
                 </div>
-            </div>
-            <!-- Page size -->
-            <!-- Page settings -->
-            <!-- Filters -->
-            <div class="d-flex justify-content-center mt-5">
-                <h4>Filters</h4>
-            </div>
-            <!-- Image checkbox -->
-            <div class="form-check">
-                <h5>Image</h5>
-                <input type="checkbox" class="form-check-input" id="imageCheck" th:name="image"
-                       th:checked="${recipeSearch.image}">
-                <label class="form-check-label" for="imageCheck">With image</label>
-            </div>
-            <!-- Image checkbox -->
-            <!-- Time input -->
-            <div class="mt-3">
-                <h5 class="px-4">Time</h5>
-                <div class="d-flex flex-row align-items-center">
-                    <label class="form-label text-nowrap mb-0" for="timeLowInput">Less than</label>
-                    <input type="number" inputmode="numeric" min="0" class="form-control ms-3 w-50" id="timeLowInput"
-                           th:field="${recipeSearch.time}">
-                    <p class="mb-0 ms-1">min</p>
-                </div>
-            </div>
-            <!-- Time input -->
-            <!-- Calories input -->
-            <div class="mt-3">
-                <h5 class="px-4">Calories</h5>
-                <div class="d-flex flex-row align-items-center">
-                    <label class="form-label text-nowrap mb-0" for="caloriesLowInput">Less than</label>
-                    <input type="number" inputmode="numeric" min="0" class="form-control ms-3 w-50"
-                           id="caloriesLowInput"
-                           th:field="${recipeSearch.calories}">
-                    <p class="mb-0 ms-1">kcal</p>
-                </div>
-            </div>
-            <!-- Calories input -->
-            <!-- Products input -->
-            <div class="mt-3">
-                <h5 class="px-4">Products</h5>
+                <!-- Page size -->
                 <div>
-                    <input
-                            type="search"
-                            class="form-control"
-                            id="filter-product-search-box"
-                            placeholder="Product"
-                            autocomplete="off"
-                    />
-                    <div id="filter-product-input-box" class="d-flex flex-row flex-wrap">
-                        <th:block th:each="product, iStat : ${recipeSearch.products}">
-                            <button type="button" class="d-inline-flex btn btn-link btn-sm filter-del-product-btn">
-                                <i class="bi bi-x-lg"></i>
-                                <p class="mb-0" th:text="${product}">product</p>
-                                <input class='filter-product-input' type="hidden" th:name="|products[${iStat.index}]|"
-                                       th:value="${product}">
-                            </button>
-                        </th:block>
+                    <h5 class="px-4">Page size</h5>
+                    <div class="d-flex flex-row align-items-center">
+                        <label class="form-label text-nowrap mb-0" for="pageSizeInput">Display</label>
+                        <input type="number" inputmode="numeric" min="0" max="100" class="form-control ms-3 w-50"
+                               id="pageSizeInput"
+                               th:field="${recipeSearch.pageSize}">
                     </div>
                 </div>
+                <!-- Page size -->
             </div>
-            <!-- Products input -->
-            <input type="hidden" th:field="${recipeSearch.title}">
-
+            <!-- Page settings -->
+            <!-- Filters -->
+            <div class="mt-5">
+                <div class="d-flex justify-content-center">
+                    <h4>Filters</h4>
+                </div>
+                <!-- Image checkbox -->
+                <div class="form-check">
+                    <h5>Image</h5>
+                    <input type="checkbox" class="form-check-input" id="imageCheck" th:name="image"
+                           th:checked="${recipeSearch.image}">
+                    <label class="form-check-label" for="imageCheck">With image</label>
+                </div>
+                <!-- Image checkbox -->
+                <!-- Time input -->
+                <div class="mt-3">
+                    <h5 class="px-4">Time</h5>
+                    <div class="d-flex flex-row align-items-center">
+                        <label class="form-label text-nowrap mb-0" for="timeLowInput">Less than</label>
+                        <input type="number" inputmode="numeric" min="0" class="form-control ms-3 w-50"
+                               id="timeLowInput"
+                               th:field="${recipeSearch.time}">
+                        <p class="mb-0 ms-1">min</p>
+                    </div>
+                </div>
+                <!-- Time input -->
+                <!-- Calories input -->
+                <div class="mt-3">
+                    <h5 class="px-4">Calories</h5>
+                    <div class="d-flex flex-row align-items-center">
+                        <label class="form-label text-nowrap mb-0" for="caloriesLowInput">Less than</label>
+                        <input type="number" inputmode="numeric" min="0" class="form-control ms-3 w-50"
+                               id="caloriesLowInput"
+                               th:field="${recipeSearch.calories}">
+                        <p class="mb-0 ms-1">kcal</p>
+                    </div>
+                </div>
+                <!-- Calories input -->
+                <!-- Products input -->
+                <div class="mt-3">
+                    <h5 class="px-4">Products</h5>
+                    <div>
+                        <input
+                                type="search"
+                                class="form-control"
+                                id="filter-product-search-box"
+                                placeholder="Product"
+                                autocomplete="off"
+                        />
+                        <div id="filter-product-input-box" class="d-flex flex-row flex-wrap">
+                            <th:block th:each="product, iStat : ${recipeSearch.products}">
+                                <button type="button" class="d-inline-flex btn btn-link btn-sm filter-del-product-btn">
+                                    <i class="bi bi-x-lg"></i>
+                                    <p class="mb-0" th:text="${product}">product</p>
+                                    <input class='filter-product-input' type="hidden"
+                                           th:name="|products[${iStat.index}]|"
+                                           th:value="${product}">
+                                </button>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+                <!-- Products input -->
+                <th:block sec:authorize="isAuthenticated()">
+                    <!-- Lists checkboxes -->
+                    <div class="mt-3">
+                        <h5 class="px-4">Lists</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="favouritesCheck" th:name="inFavourites"
+                                   th:checked="${recipeSearch.inFavourites}">
+                            <label class="form-check-label" for="favouritesCheck">Favourites</label>
+                        </div>
+                        <!--
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="myRecipeCheck" th:name="myRecipes"
+                                   th:checked="${recipeSearch.inFavourites}">
+                            <label class="form-check-label" for="myRecipeCheck">My recipes</label>
+                        </div>
+                        -->
+                    </div>
+                    <!-- Lists checkboxes -->
+                </th:block>
+                <input type="hidden" th:field="${recipeSearch.title}">
+            </div>
+            <!-- Filters -->
             <div class="d-flex justify-content-center mt-5">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
-            <!-- Filters -->
         </form>
     </div>
     <!-- Side menu -->
@@ -443,7 +483,7 @@
     <!-- Copyright -->
 </footer>
 <!-- Footer -->
-
+<!-- Search box script -->
 <script th:fragment="search_box_script">
     $(document).ready(function () {
 
@@ -497,6 +537,8 @@
             });
     });
 </script>
+<!-- Search box script -->
+<!-- Filters script -->
 <script>
     $(document).ready(function () {
         $.extend($.ui.menu.prototype.options.classes, {
@@ -569,6 +611,79 @@
                 event.preventDefault();
                 return false;
             }
+        });
+    });
+</script>
+<!-- Filters script -->
+<script>
+    $(document).ready(function () {
+        let token = $('#_csrf').attr('content');
+        let header = $('#_csrf_header').attr('content');
+
+        async function sendFetch(url, method) {
+            let response = fetch(url, {
+                method: method,
+                credentials: 'include',
+                headers: {
+                    [header]: token,
+                    "charset": "UTF-8",
+                    "Content-Type": "application/json"
+                },
+                redirect: 'follow'
+            })
+
+            return await response;
+        }
+
+        function removeFromFavourite(button, recipe_id) {
+            sendFetch("/recipes/" + recipe_id + "/favourites", 'DELETE')
+                .then((response) => {
+                    if (response.ok) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            let parent = button.parent();
+                            parent.html(
+                                "<button class='btn btn-outline-success addToFavouriteButton'>" +
+                                "<i class='bi bi-bookmark-heart'></i>" +
+                                "Add to Favourites" +
+                                "</button>"
+                            );
+                            parent.children().last().click(function () {
+                                addToFavourite($(this), recipe_id);
+                            });
+                        }
+                    }
+                });
+        }
+
+        function addToFavourite(button, recipe_id) {
+            sendFetch("/recipes/" + recipe_id + "/favourites", 'POST')
+                .then((response) => {
+                    if (response.ok) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            let parent = button.parent();
+                            parent.html(
+                                "<button class='btn btn-outline-danger removeFromFavouriteButton'>" +
+                                "<i class='bi bi-bookmark-x-fill'></i>" +
+                                "Remove from Favourites" +
+                                "</button>"
+                            );
+                            parent.children().last().click(function () {
+                                removeFromFavourite($(this), recipe_id);
+                            });
+                        }
+                    }
+                });
+        }
+
+        $(".addToFavouriteButton").click(function () {
+            addToFavourite($(this), $(this).attr("recipe"));
+        });
+        $(".removeFromFavouriteButton").click(function () {
+            removeFromFavourite($(this), $(this).attr("recipe"));
         });
     });
 </script>

@@ -14,4 +14,8 @@ public interface RecipeService {
     void editRecipe(RecipeDto newRecipe);
 
     void deleteRecipeById(Long id);
+
+    void addToFavourites(Long recipeId);
+
+    void removeFromFavourites(Long recipeId);
 }

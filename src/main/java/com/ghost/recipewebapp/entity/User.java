@@ -4,7 +4,9 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -30,7 +32,20 @@ public class User {
     @Column(name = "authorities")
     private String authorities;
 
-    // For future improvement
+    @ManyToMany(mappedBy = "likedUsers", fetch = FetchType.LAZY)
+    private Set<Recipe> favouriteRecipes = new HashSet<>();
+
+    public void addToFavouriteRecipes(Recipe recipe) {
+        this.favouriteRecipes.add(recipe);
+        recipe.getLikedUsers().add(this);
+    }
+
+    public void removeFromFavouriteRecipes(Recipe recipe) {
+        this.favouriteRecipes.remove(recipe);
+        recipe.getLikedUsers().remove(this);
+    }
+
+// For future improvement
     /*
     public void setAuthorities(String authorities) {
         this.authorities = authorities;

@@ -7,6 +7,7 @@ import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.entity.UserDetailsImpl;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
+import com.ghost.recipewebapp.repository.UserRepository;
 import com.ghost.recipewebapp.repository.specification.RecipeSpecifications;
 import com.ghost.recipewebapp.service.RecipeService;
 import com.ghost.recipewebapp.util.FileLoader;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -29,11 +31,13 @@ import java.util.Objects;
 @ComponentScan("com.ghost.util")
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
+    private final UserRepository userRepository;
     private final FileLoader fileLoader;
 
     @Autowired
-    public RecipeServiceImpl(RecipeRepository recipeRepository, FileLoader fileLoader) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, UserRepository userRepository, FileLoader fileLoader) {
         this.recipeRepository = recipeRepository;
+        this.userRepository = userRepository;
         this.fileLoader = fileLoader;
     }
 
@@ -46,6 +50,14 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDto.setMinutes(recipe.getTime() % 60);
         recipeDto.setCalories(recipe.getCalories());
         recipeDto.setAuthor(recipe.getAuthor().getName());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+            recipeDto.setFavourite(recipe.getLikedUsers().contains(user));
+        } else {
+            recipeDto.setFavourite(false);
+        }
 
         recipeDto.getIngredientsList().addAll(recipe.getIngredientsList());
         recipeDto.getStepsList().addAll(recipe.getStepsList());
@@ -111,6 +123,11 @@ public class RecipeServiceImpl implements RecipeService {
                 .and(RecipeSpecifications.caloriesLessOrEqual(recipeSearch.getCalories()))
                 .and(RecipeSpecifications.containsProducts(recipeSearch.getProducts()));
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            spec = spec.and(RecipeSpecifications.inFavourites(recipeSearch.getInFavourites(), authentication.getName()));
+        }
+
         Page<Recipe> recipePage = recipeRepository.findAll(spec, pageable);
 
         return recipePage.map(this::recipeToRecipeDto);
@@ -170,5 +187,36 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.getStepsList().forEach(this::deleteImage);
 
         recipeRepository.delete(recipe);
+    }
+
+    @Override
+    public void addToFavourites(Long recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe with id" + recipeId + "not found"));
+
+        //get authenticated User from SecurityContextHolder
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email" + email + "not found"));
+        recipe.addToLikedUsers(user);
+
+        recipeRepository.save(recipe);
+    }
+
+    @Override
+    public void removeFromFavourites(Long recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe with id" + recipeId + "not found"));
+
+        //get authenticated User from SecurityContextHolder
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email" + email + "not found"));
+
+        recipe.addToLikedUsers(user);
+
+        recipeRepository.save(recipe);
     }
 }

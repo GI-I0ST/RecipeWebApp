@@ -2,8 +2,10 @@ package com.ghost.recipewebapp.repository.specification;
 
 import com.ghost.recipewebapp.entity.Ingredient;
 import com.ghost.recipewebapp.entity.Recipe;
+import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.entity.metaModel.Ingredient_;
 import com.ghost.recipewebapp.entity.metaModel.Recipe_;
+import com.ghost.recipewebapp.entity.metaModel.User_;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Join;
@@ -73,6 +75,17 @@ public class RecipeSpecifications {
             }
 
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+        };
+    }
+
+    public static Specification<Recipe> inFavourites(Boolean inFavourites, String email) {
+        return (root, query, criteriaBuilder) -> {
+            if (Objects.isNull(inFavourites) || !inFavourites) {
+                return criteriaBuilder.conjunction();
+            }
+
+            Join<Recipe, User> userRecipeJoin = root.join(Recipe_.LIKED_USERS, JoinType.INNER);
+            return criteriaBuilder.equal(userRecipeJoin.get(User_.EMAIL), email);
         };
     }
 }

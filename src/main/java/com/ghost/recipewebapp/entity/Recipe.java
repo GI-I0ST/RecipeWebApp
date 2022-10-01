@@ -52,6 +52,23 @@ public class Recipe {
     @JoinColumn(name = "author_id")
     private User author;
 
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(name = "favourites_users",
+            joinColumns = @JoinColumn(name = "recipe_id"),
+            inverseJoinColumns = @JoinColumn(name = "users_id"))
+    private Set<User> likedUsers = new HashSet<>();
+
+    public void addToLikedUsers(User user) {
+        this.likedUsers.add(user);
+        user.getFavouriteRecipes().add(this);
+    }
+
+    public void removeFromLikedUsers(User user) {
+        this.likedUsers.remove(user);
+        user.getFavouriteRecipes().remove(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

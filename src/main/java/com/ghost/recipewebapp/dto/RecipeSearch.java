@@ -28,6 +28,8 @@ public class RecipeSearch {
     @Min(1)
     private Integer pageSize;
 
+    private Boolean inFavourites;
+
     public Integer getCurrentPageOrDefault() {
         return Optional.ofNullable(currentPage).orElse(RecipeSearch.DEFAULT_PAGE_NUMBER);
     }
@@ -65,6 +67,10 @@ public class RecipeSearch {
                     URLEncoder.encode(products.get(i), StandardCharsets.UTF_8);
 
             params.add(productParam);
+        }
+
+        if (Objects.nonNull(inFavourites) && inFavourites) {
+            params.add("inFavourites=on");
         }
 
         String result = String.join("&", params);

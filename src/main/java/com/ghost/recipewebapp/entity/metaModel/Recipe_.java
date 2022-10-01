@@ -5,6 +5,7 @@ import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.entity.Step;
 
 import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -17,6 +18,7 @@ public abstract class Recipe_ {
     public static volatile SingularAttribute<Recipe, Integer> calories;
     public static volatile ListAttribute<Recipe, Ingredient> ingredientsList;
     public static volatile ListAttribute<Recipe, Step> stepsList;
+    public static volatile SetAttribute<Recipe, Step> likedUsers;
 
     public static final String ID = "id";
     public static final String TITLE = "title";
@@ -25,4 +27,5 @@ public abstract class Recipe_ {
     public static final String CALORIES = "calories";
     public static final String INGREDIENTS_LIST = "ingredientsList";
     public static final String STEPS_LIST = "stepsList";
+    public static final String LIKED_USERS = "likedUsers";
 }
