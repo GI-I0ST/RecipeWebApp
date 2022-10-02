@@ -36,7 +36,7 @@
             <!-- Real Image -->
             <div th:if="*{image}"
                  class="align-items-center d-flex justify-content-center recipe-full-image-box mb-3">
-                <img th:src="@{/uploadedImages/{file}(file=*{image})}"
+                <img th:src="@{/{dir}/{file}(dir=${uploadedImagesDir}, file=*{image})}"
                      class="recipe-full-image">
             </div>
             <!-- Real Image -->
@@ -192,7 +192,7 @@
                         <!-- Real Image -->
                         <div th:if="${iStep.image}"
                              class="align-items-center d-flex justify-content-center mb-3">
-                            <img th:src="@{/uploadedImages/{file}(file=${iStep.image})}"
+                            <img th:src="@{/{dir}/{file}(dir=${uploadedImagesDir}, file=${iStep.image})}"
                                  class="step-image">
                         </div>
                         <!-- Real Image -->

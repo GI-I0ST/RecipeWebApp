@@ -76,7 +76,7 @@
         <!-- Image -->
         <div th:if="${recipe.image}"
              class="align-items-center d-flex justify-content-center recipe-full-image-box mb-3">
-            <img th:src="@{/uploadedImages/{file}(file=${recipe.image})}"
+            <img th:src="@{/{dir}/{file}(dir=${uploadedImagesDir}, file=${recipe.image})}"
                  class="recipe-full-image">
         </div>
 
@@ -166,7 +166,7 @@
                     <div class="d-flex flex-column justify-content-center w-100">
                         <!-- Step image -->
                         <div th:if="${step.image}" class="text-center mb-2">
-                            <img class="step-image" th:src="@{/uploadedImages/{file}(file=${step.image})}"
+                            <img class="step-image" th:src="@{/{dir}/{file}(dir=${uploadedImagesDir}, file=${step.image})}"
                                  th:alt="${recipe.title}">
                         </div>
                         <!-- Step image -->

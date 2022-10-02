@@ -152,7 +152,7 @@
                     <div class="align-items-center d-flex justify-content-center recipe-short-image-box flex-shrink-0">
                         <a th:href="@{/recipes/{id}(id=${recipe.id})}">
                             <i th:if="!${recipe.image}" class="bi bi-card-image fs-1"></i>
-                            <img th:if="${recipe.image}" th:src="@{/uploadedImages/{file}(file=${recipe.image})}"
+                            <img th:if="${recipe.image}" th:src="@{/{dir}/{file}(dir=${uploadedImagesDir}, file=${recipe.image})}"
                                  class="recipe-short-image">
                         </a>
                     </div>

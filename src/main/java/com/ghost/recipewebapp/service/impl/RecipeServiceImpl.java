@@ -12,7 +12,7 @@ import com.ghost.recipewebapp.repository.specification.RecipeSpecifications;
 import com.ghost.recipewebapp.service.RecipeService;
 import com.ghost.recipewebapp.util.FileLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,20 +25,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.file.Path;
 import java.util.Objects;
 
 @Service
-@ComponentScan("com.ghost.util")
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
     private final FileLoader fileLoader;
 
     @Autowired
-    public RecipeServiceImpl(RecipeRepository recipeRepository, UserRepository userRepository, FileLoader fileLoader) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository,
+                             UserRepository userRepository,
+                             @Value("${uploads.image-dir-mame}") String uploadsImageDir,
+                             @Value("${uploads.static-dir}") String uploadsDir) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
-        this.fileLoader = fileLoader;
+        this.fileLoader = new FileLoader(Path.of(uploadsDir, uploadsImageDir));
     }
 
     private RecipeDto recipeToRecipeDto (Recipe recipe) {

@@ -4,6 +4,7 @@ import com.ghost.recipewebapp.dto.RecipeDto;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,10 +22,13 @@ import java.util.stream.IntStream;
 @RequestMapping("/recipes")
 public class RecipeController {
     private final RecipeService recipeService;
+    private final String uploadedImagesDir;
 
     @Autowired
-    public RecipeController(RecipeService recipeService) {
+    public RecipeController(RecipeService recipeService,
+                            @Value("${uploads.image-dir-mame}") String uploadedImagesDir) {
         this.recipeService = recipeService;
+        this.uploadedImagesDir = uploadedImagesDir;
     }
 
     private List<Integer> calculatePageNumbers(Page<?> page, int currentPage) {
@@ -41,6 +45,11 @@ public class RecipeController {
             return IntStream.rangeClosed(currentPage - 2, currentPage + 2).boxed().collect(Collectors.toList());
 
         }
+    }
+
+    @ModelAttribute
+    private void addAttributes(Model model) {
+        model.addAttribute("uploadedImagesDir", uploadedImagesDir);
     }
 
     @GetMapping("")
