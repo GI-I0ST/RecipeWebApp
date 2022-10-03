@@ -182,7 +182,7 @@ public class RecipeServiceImpl implements RecipeService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email" + email + "not found"));
 
-        recipe.addToLikedUsers(user);
+        recipe.removeFromLikedUsers(user);
 
         recipeRepository.save(recipe);
     }
