@@ -1,6 +1,7 @@
 package com.ghost.recipewebapp.controller;
 
 import com.ghost.recipewebapp.dto.RecipeDto;
+import com.ghost.recipewebapp.dto.RecipeFullDto;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,7 @@ public class RecipeController {
 
     @GetMapping("/{id}")
     public String getRecipeById(@PathVariable Long id, Model model) {
-        RecipeDto recipe = recipeService.getRecipeById(id);
+        RecipeFullDto recipe = recipeService.getRecipeById(id);
         model.addAttribute("recipe", recipe);
         model.addAttribute("recipeSearch", new RecipeSearch());
         return "recipes/recipePage";
@@ -93,13 +94,13 @@ public class RecipeController {
 
     @GetMapping("/new")
     public String getRecipeCreationForm(Model model) {
-        model.addAttribute("recipe", new RecipeDto());
+        model.addAttribute("recipe", new RecipeFullDto());
         model.addAttribute("recipeSearch", new RecipeSearch());
         return "recipes/recipeForm";
     }
 
     @PostMapping(value = "/new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String addNewRecipe(@Valid @ModelAttribute("recipe") RecipeDto newRecipe, BindingResult bindingResult, Model model) {
+    public String addNewRecipe(@Valid @ModelAttribute("recipe") RecipeFullDto newRecipe, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
             model.addAttribute("recipeSearch", new RecipeSearch());
@@ -112,7 +113,7 @@ public class RecipeController {
 
     @GetMapping("/{id}/edit")
     public String getRecipeEditForm(@PathVariable Long id, Model model) {
-        RecipeDto recipe = recipeService.getRecipeById(id);
+        RecipeFullDto recipe = recipeService.getRecipeById(id);
         model.addAttribute("recipe", recipe);
         model.addAttribute("recipeSearch", new RecipeSearch());
 
@@ -120,7 +121,7 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
-    public String editRecipe(@PathVariable Long id, @Valid @ModelAttribute("recipe") RecipeDto newRecipe, BindingResult bindingResult, Model model) {
+    public String editRecipe(@PathVariable Long id, @Valid @ModelAttribute("recipe") RecipeFullDto newRecipe, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
             return "recipes/recipeForm";

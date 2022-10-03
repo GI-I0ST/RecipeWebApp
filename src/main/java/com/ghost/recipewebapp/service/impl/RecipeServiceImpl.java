@@ -1,10 +1,12 @@
 package com.ghost.recipewebapp.service.impl;
 
 import com.ghost.recipewebapp.dto.RecipeDto;
+import com.ghost.recipewebapp.dto.RecipeFullDto;
 import com.ghost.recipewebapp.entity.MultipartImageEntity;
 import com.ghost.recipewebapp.entity.Recipe;
+import com.ghost.recipewebapp.entity.Step;
 import com.ghost.recipewebapp.entity.User;
-import com.ghost.recipewebapp.entity.UserDetailsImpl;
+import com.ghost.recipewebapp.modelMapper.RecipeMapper;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.repository.UserRepository;
@@ -33,39 +35,18 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
     private final FileLoader fileLoader;
+    private final RecipeMapper recipeMapper;
 
     @Autowired
     public RecipeServiceImpl(RecipeRepository recipeRepository,
                              UserRepository userRepository,
                              @Value("${uploads.image-dir-mame}") String uploadsImageDir,
-                             @Value("${uploads.static-dir}") String uploadsDir) {
+                             @Value("${uploads.static-dir}") String uploadsDir,
+                             RecipeMapper recipeMapper) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
         this.fileLoader = new FileLoader(Path.of(uploadsDir, uploadsImageDir));
-    }
-
-    private RecipeDto recipeToRecipeDto (Recipe recipe) {
-        RecipeDto recipeDto = new RecipeDto();
-        recipeDto.setId(recipe.getId());
-        recipeDto.setTitle(recipe.getTitle());
-        recipeDto.setImage(recipe.getImage());
-        recipeDto.setHours(recipe.getTime() / 60);
-        recipeDto.setMinutes(recipe.getTime() % 60);
-        recipeDto.setCalories(recipe.getCalories());
-        recipeDto.setAuthor(recipe.getAuthor().getName());
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
-            User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
-            recipeDto.setFavourite(recipe.getLikedUsers().contains(user));
-        } else {
-            recipeDto.setFavourite(false);
-        }
-
-        recipeDto.getIngredientsList().addAll(recipe.getIngredientsList());
-        recipeDto.getStepsList().addAll(recipe.getStepsList());
-
-        return recipeDto;
+        this.recipeMapper = recipeMapper;
     }
 
     private void uploadImage(MultipartImageEntity imageEntity) {
@@ -96,20 +77,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Long addNewRecipe(RecipeDto recipeDto) {
-        Recipe recipe = new Recipe();
-
+    public Long addNewRecipe(RecipeFullDto recipeDto) {
         // upload recipe image
         uploadImage(recipeDto);
-        recipe.setImage(recipeDto.getImage());
-        recipe.setTitle(recipeDto.getTitle());
-        // convert to minutes
-        recipe.setTime(recipeDto.getHours() * 60 + recipeDto.getMinutes());
-        recipe.setCalories(recipeDto.getCalories());
-        recipe.getIngredientsList().addAll(recipeDto.getIngredientsList());
-        recipe.getStepsList().addAll(recipeDto.getStepsList());
         // upload step image
         recipeDto.getStepsList().forEach(this::uploadImage);
+
+        Recipe recipe = recipeMapper.toEntity(recipeDto);
         recipeRepository.saveAndFlush(recipe);
 
         return recipe.getId();
@@ -133,52 +107,47 @@ public class RecipeServiceImpl implements RecipeService {
 
         Page<Recipe> recipePage = recipeRepository.findAll(spec, pageable);
 
-        return recipePage.map(this::recipeToRecipeDto);
+        return recipePage.map(recipeMapper::toShortDto);
     }
 
     @Override
-    public RecipeDto getRecipeById(Long id) {
+    public RecipeFullDto getRecipeById(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Recipe with id " + id + " not found"));
 
-        return recipeToRecipeDto(recipe);
+        return recipeMapper.toFullDto(recipe);
     }
 
     @Override
-    public void editRecipe(RecipeDto recipeDto) {
-        Recipe recipe = recipeRepository.findById(recipeDto.getId())
+    public void editRecipe(RecipeFullDto recipeDto) {
+        Recipe foundRecipe = recipeRepository.findById(recipeDto.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Recipe with id " + recipeDto.getId() + " not found"));
 
-        recipe.setTitle(recipeDto.getTitle());
-
         // edit image
-        recipeDto.setImage(recipe.getImage());
+        recipeDto.setImage(foundRecipe.getImage());
         updateImage(recipeDto);
-        recipe.setImage(recipeDto.getImage());
 
-        recipeDto.getStepsList().forEach(step -> {
+        for (Step step : recipeDto.getStepsList()) {
             // remove already uploaded image from deletion list
             if (Objects.nonNull(step.getImage()) && !step.getImage().isBlank() && step.getImageMultipart().isEmpty()) {
-                recipe.getStepsList().removeIf(oldStep -> step.getImage().equals(oldStep.getImage()));
+                foundRecipe.getStepsList().removeIf(oldStep -> step.getImage().equals(oldStep.getImage()));
+                continue;
             }
 
             // upload new step image
             uploadImage(step);
-        });
+        }
         // delete unused uploaded step images
-        recipe.getStepsList().forEach(this::deleteImage);
-        // set new steps list
-        recipe.getStepsList().clear();
-        recipe.getStepsList().addAll(recipeDto.getStepsList());
+        foundRecipe.getStepsList().forEach(this::deleteImage);
 
-        recipe.setTime(recipeDto.getHours() * 60 + recipeDto.getMinutes());
-        recipe.setCalories(recipeDto.getCalories());
-        recipe.getIngredientsList().clear();
-        recipe.getIngredientsList().addAll(recipeDto.getIngredientsList());
+        // copy external fields
+        Recipe newRecipe = recipeMapper.toEntity(recipeDto);
+        newRecipe.setAuthor(foundRecipe.getAuthor());
+        newRecipe.setLikedUsers(foundRecipe.getLikedUsers());
 
-        recipeRepository.save(recipe);
+        recipeRepository.save(newRecipe);
     }
 
     @Override
@@ -186,7 +155,7 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        deleteImage(recipeToRecipeDto(recipe));
+        deleteImage(recipeMapper.toFullDto(recipe));
         recipe.getStepsList().forEach(this::deleteImage);
 
         recipeRepository.delete(recipe);

@@ -1,17 +1,18 @@
 package com.ghost.recipewebapp.service;
 
 import com.ghost.recipewebapp.dto.RecipeDto;
+import com.ghost.recipewebapp.dto.RecipeFullDto;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import org.springframework.data.domain.Page;
 
 public interface RecipeService {
-    RecipeDto getRecipeById(Long id);
+    RecipeFullDto getRecipeById(Long id);
 
     Page<RecipeDto> getRecipesPage(RecipeSearch recipeSearch);
 
-    Long addNewRecipe(RecipeDto newRecipe);
+    Long addNewRecipe(RecipeFullDto newRecipe);
 
-    void editRecipe(RecipeDto newRecipe);
+    void editRecipe(RecipeFullDto newRecipe);
 
     void deleteRecipeById(Long id);
 
