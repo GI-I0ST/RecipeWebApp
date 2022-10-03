@@ -166,9 +166,7 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe with id" + recipeId + "not found"));
 
-        //get authenticated User from SecurityContextHolder
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+        //get authenticated email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email" + email + "not found"));
@@ -182,7 +180,7 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe with id" + recipeId + "not found"));
 
-        //get authenticated User from SecurityContextHolder
+        //get authenticated email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email" + email + "not found"));
