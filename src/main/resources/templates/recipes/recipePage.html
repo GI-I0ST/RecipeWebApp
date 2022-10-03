@@ -6,6 +6,9 @@
 
     <th:block th:insert="~{recipes/index::head/link}">Links</th:block>
     <th:block th:insert="~{recipes/index::head/script}">Scripts</th:block>
+
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <th:block th:insert="~{recipes/index::navbar}">Navbar</th:block>
@@ -28,22 +31,24 @@
 
         <!-- Controls -->
         <ul class="navbar-nav flex-row w-75 mb-3">
-            <!-- Delete from favourites -->
-            <li class="navbar-item hover-underline-animation fs-5">
-                <a class="nav-link py-0" href="#">
+            <!-- Favourites -->
+            <li class="navbar-item hover-underline-animation fs-5 ms-4">
+                <!-- Delete from favourites -->
+                <a class="nav-link py-0 cursor-pointer" id="deleteFromFavouriteButton"
+                   th:style="'display:' + (${recipe.favourite} ? 'block' : 'none')">
                     <i class="bi bi-bookmark-x-fill"></i>
                     Favourites
                 </a>
-            </li>
-            <!-- Delete from favourites -->
-            <!-- Add to favourites -->
-            <li class="navbar-item hover-underline-animation fs-5 ms-4">
-                <a class="nav-link py-0" href="#">
+                <!-- Delete from favourites -->
+                <!-- Add to favourites -->
+                <a class="nav-link py-0 cursor-pointer" id="addToFavouriteButton"
+                   th:style="'display:' + (${recipe.favourite} ? 'none' : 'block')">
                     <i class="bi bi-bookmark-heart"></i>
                     Favourites
                 </a>
+                <!-- Add to favourites -->
             </li>
-            <!-- Add to favourites -->
+            <!-- Favourites -->
             <!-- Print -->
             <li class="navbar-item hover-underline-animation ms-4 fs-5">
                 <a class="nav-link py-0" href="#">
@@ -166,7 +171,8 @@
                     <div class="d-flex flex-column justify-content-center w-100">
                         <!-- Step image -->
                         <div th:if="${step.image}" class="text-center mb-2">
-                            <img class="step-image" th:src="@{/{dir}/{file}(dir=${uploadedImagesDir}, file=${step.image})}"
+                            <img class="step-image"
+                                 th:src="@{/{dir}/{file}(dir=${uploadedImagesDir}, file=${step.image})}"
                                  th:alt="${recipe.title}">
                         </div>
                         <!-- Step image -->
@@ -227,6 +233,59 @@
 
     });
 </script>
+<!-- Favourites control script -->
+<script>
+    $(document).ready(function () {
+        let token = $('#_csrf').attr('content');
+        let header = $('#_csrf_header').attr('content');
 
+        async function sendFetch(method) {
+            let response = fetch("/recipes/" + [[${recipe.id}]] + "/favourites", {
+                method: method,
+                credentials: 'include',
+                headers: {
+                    [header]: token,
+                    "charset": "UTF-8",
+                    "Content-Type": "application/json"
+                },
+                redirect: 'follow'
+            })
+
+            return await response;
+        }
+
+        function removeFromFavourite() {
+            sendFetch('DELETE')
+                .then((response) => {
+                    if (response.ok) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            $("#addToFavouriteButton").css("display", "block");
+                            $("#deleteFromFavouriteButton").css("display", "none");
+                        }
+                    }
+                });
+        }
+
+        function addToFavourite() {
+            sendFetch('POST')
+                .then((response) => {
+                    if (response.ok) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            $("#addToFavouriteButton").css("display", "none");
+                            $("#deleteFromFavouriteButton").css("display", "block");
+                        }
+                    }
+                });
+        }
+
+        $("#addToFavouriteButton").click(addToFavourite);
+        $("#deleteFromFavouriteButton").click(removeFromFavourite);
+    });
+</script>
+<!-- Favourites control script -->
 </body>
 </html>
