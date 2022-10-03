@@ -91,7 +91,7 @@
                     Calories
                 </label>
                 <div class="d-flex flex-row align-items-center">
-                    <input type="number" inputmode="numeric" min="0" th:field="*{calories}"
+                    <input type="number" inputmode="numeric" min="0" max="2000000" th:field="*{calories}"
                            id="recipe-form-calories" class="form-control me-1"
                            th:classappend="${errorForm} ? (${#fields.hasErrors('calories')} ? 'is-invalid' : 'is-valid')"/>
                     <p class="mb-0">kcal</p>
