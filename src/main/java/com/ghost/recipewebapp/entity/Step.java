@@ -23,7 +23,7 @@ public class Step implements MultipartImageEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "text")
+    @Column(name = "text", columnDefinition="TEXT")
     @NotBlank(message = "Step's text is required")
     private String text;
 
