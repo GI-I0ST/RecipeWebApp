@@ -1,7 +1,6 @@
 package com.ghost.recipewebapp.dto;
 
 import com.ghost.recipewebapp.entity.Ingredient;
-import com.ghost.recipewebapp.entity.MultipartImageEntity;
 import com.ghost.recipewebapp.entity.Step;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecipeFullDto extends RecipeDto implements MultipartImageEntity {
+public class RecipeFullDto extends RecipeDto {
 
     protected MultipartFile imageMultipart;
 

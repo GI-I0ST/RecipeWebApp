@@ -2,7 +2,6 @@ package com.ghost.recipewebapp.service.impl;
 
 import com.ghost.recipewebapp.dto.RecipeDto;
 import com.ghost.recipewebapp.dto.RecipeFullDto;
-import com.ghost.recipewebapp.entity.MultipartImageEntity;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.entity.Step;
 import com.ghost.recipewebapp.entity.User;
@@ -29,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
@@ -49,39 +49,31 @@ public class RecipeServiceImpl implements RecipeService {
         this.recipeMapper = recipeMapper;
     }
 
-    private void uploadImage(MultipartImageEntity imageEntity) {
-        MultipartFile imageMultipart = imageEntity.getImageMultipart();
-
+    private Optional<String> uploadImage(MultipartFile imageMultipart) {
         if (Objects.nonNull(imageMultipart) && !imageMultipart.isEmpty()) {
             String imgName = fileLoader.uploadFile(imageMultipart);
-            imageEntity.setImage(imgName);
+            return Optional.of(imgName);
         }
+
+        return Optional.empty();
     }
 
-    private void deleteImage(MultipartImageEntity imageEntity) {
-        String imgName = imageEntity.getImage();
-
+    private void deleteImage(String imgName) {
         if (Objects.nonNull(imgName) && !imgName.isBlank()) {
             fileLoader.deleteFile(imgName);
-            imageEntity.setImage(null);
-        }
-    }
-
-    private void updateImage(MultipartImageEntity imageEntity) {
-        MultipartFile imageMultipart = imageEntity.getImageMultipart();
-
-        if (Objects.nonNull(imageMultipart) && !imageMultipart.isEmpty()) {
-            deleteImage(imageEntity);
-            uploadImage(imageEntity);
         }
     }
 
     @Override
     public Long addNewRecipe(RecipeFullDto recipeDto) {
         // upload recipe image
-        uploadImage(recipeDto);
+        uploadImage(recipeDto.getImageMultipart()).
+                ifPresent(recipeDto::setImage);
         // upload step image
-        recipeDto.getStepsList().forEach(this::uploadImage);
+        recipeDto.getStepsList().forEach(
+                step -> uploadImage(step.getImageMultipart())
+                        .ifPresent(step::setImage)
+        );
 
         Recipe recipe = recipeMapper.toEntity(recipeDto);
         recipeRepository.saveAndFlush(recipe);
@@ -127,7 +119,11 @@ public class RecipeServiceImpl implements RecipeService {
 
         // edit image
         recipeDto.setImage(foundRecipe.getImage());
-        updateImage(recipeDto);
+        uploadImage(recipeDto.getImageMultipart())
+                .ifPresent((imgName) -> {
+                    deleteImage(recipeDto.getImage());
+                    recipeDto.setImage(imgName);
+                });
 
         for (Step step : recipeDto.getStepsList()) {
             // remove already uploaded image from deletion list
@@ -137,10 +133,11 @@ public class RecipeServiceImpl implements RecipeService {
             }
 
             // upload new step image
-            uploadImage(step);
+            uploadImage(step.getImageMultipart())
+                    .ifPresent(step::setImage);
         }
         // delete unused uploaded step images
-        foundRecipe.getStepsList().forEach(this::deleteImage);
+        foundRecipe.getStepsList().forEach(oldStep -> deleteImage(oldStep.getImage()));
 
         // copy external fields
         Recipe newRecipe = recipeMapper.toEntity(recipeDto);
@@ -155,8 +152,8 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        deleteImage(recipeMapper.toFullDto(recipe));
-        recipe.getStepsList().forEach(this::deleteImage);
+        deleteImage(recipe.getImage());
+        recipe.getStepsList().forEach(step -> deleteImage(step.getImage()));
 
         recipeRepository.delete(recipe);
     }

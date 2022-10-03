@@ -17,7 +17,7 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "steps")
-public class Step implements MultipartImageEntity {
+public class Step {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
