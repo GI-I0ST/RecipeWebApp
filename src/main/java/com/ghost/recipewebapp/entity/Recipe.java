@@ -43,10 +43,6 @@ public class Recipe {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Step> stepsList = new ArrayList<>();
 
-    //comments to recipe
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> commentsList = new ArrayList<>();
-
     @CreatedBy
     @ManyToOne
     @JoinColumn(name = "author_id")
