@@ -29,14 +29,14 @@ public class RecipeMapper {
 
     @PostConstruct
     public void setupMapper() {
-        TypeMap<Recipe, RecipeFullDto> fullTypeMap = modelMapper.createTypeMap(Recipe.class, RecipeFullDto.class)
+        TypeMap<Recipe, RecipeDto> baseTypeMap = modelMapper.createTypeMap(Recipe.class, RecipeDto.class)
                 .addMappings(mapper -> mapper
                         .using(ctx -> ((int) ctx.getSource()) / 60)
-                        .map(Recipe::getTime, RecipeFullDto::setHours))
+                        .map(Recipe::getTime, RecipeDto::setHours))
                 .addMappings(mapper -> mapper
                         .using(ctx -> ((int) ctx.getSource()) % 60)
-                        .map(Recipe::getTime, RecipeFullDto::setMinutes))
-                .addMapping(recipe -> recipe.getAuthor().getName(), RecipeFullDto::setAuthor)
+                        .map(Recipe::getTime, RecipeDto::setMinutes))
+                .addMapping(recipe -> recipe.getAuthor().getName(), RecipeDto::setAuthor)
                 .addMappings(mapper -> mapper
                         .using(ctx -> {
                             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,9 +46,12 @@ public class RecipeMapper {
                             }
                             return false;
                         })
-                        .map(Recipe::getLikedUsers, RecipeFullDto::setFavourite));
+                        .map(Recipe::getLikedUsers, RecipeDto::setFavourite));
 
-        fullTypeMap.include(RecipeDto.class);
+        baseTypeMap.include(Recipe.class, RecipeFullDto.class);
+        modelMapper.typeMap(Recipe.class, RecipeFullDto.class)
+                .addMapping(Recipe::getStepsList, RecipeFullDto::setStepsList)
+                .addMapping(Recipe::getIngredientsList, RecipeFullDto::setIngredientsList);
 
         modelMapper.createTypeMap(RecipeFullDto.class, Recipe.class)
                 .addMappings(mapper -> mapper.skip(Recipe::setAuthor))
