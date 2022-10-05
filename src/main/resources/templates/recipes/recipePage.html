@@ -57,24 +57,30 @@
                 </a>
             </li>
             <!-- Print -->
-            <!-- Edit -->
-            <li class="navbar-item hover-underline-animation ms-auto me-4 fs-5">
-                <a class="nav-link py-0" href="#" th:href="@{/recipes/{id}/edit(id=${recipe.id})}">
-                    <i class="bi bi-pencil"></i>
-                    Edit
-                </a>
-            </li>
-            <!-- Edit -->
-            <!-- Remove -->
-            <li class="navbar-item hover-underline-animation fs-5">
-                <form th:action="@{/recipes/{id}(id=${recipe.id})}" th:method="DELETE">
-                    <button type="submit" class="nav-link btn btn-link py-0">
-                        <i class="bi bi-eraser-fill"></i>
-                        Remove
-                    </button>
-                </form>
-            </li>
-            <!-- Remove -->
+            <div class="ms-auto hstack gap-4">
+                <th:block th:if="${isOwner}">
+                    <!-- Edit -->
+                    <li class="navbar-item hover-underline-animation fs-5">
+                        <a class="nav-link py-0" href="#" th:href="@{/recipes/{id}/edit(id=${recipe.id})}">
+                            <i class="bi bi-pencil"></i>
+                            Edit
+                        </a>
+                    </li>
+                    <!-- Edit -->
+                </th:block>
+                <th:block th:if="${isOwner or isAdmin}">
+                    <!-- Remove -->
+                    <li class="navbar-item hover-underline-animation fs-5">
+                        <form th:action="@{/recipes/{id}(id=${recipe.id})}" th:method="DELETE">
+                            <button type="submit" class="nav-link btn btn-link py-0">
+                                <i class="bi bi-eraser-fill"></i>
+                                Remove
+                            </button>
+                        </form>
+                    </li>
+                    <!-- Remove -->
+                </th:block>
+            </div>
         </ul>
         <!-- Controls -->
 

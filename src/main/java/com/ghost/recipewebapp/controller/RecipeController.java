@@ -103,6 +103,18 @@ public class RecipeController {
         model.addAttribute("recipe", recipeDto);
         model.addAttribute("recipeSearch", new RecipeSearch());
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            // if user is anonymous
+            model.addAttribute("isOwner", false);
+            model.addAttribute("isAdmin", false);
+        } else {
+            // if user is authenticated
+            User currentUser = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+            model.addAttribute("isOwner", recipe.getAuthor().equals(currentUser));
+            model.addAttribute("isAdmin", authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
+        }
+
         return "recipes/recipePage";
     }
 
