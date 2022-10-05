@@ -28,7 +28,7 @@ public class FileLoader {
         uploadDirectory = absolutePath.toString();
     }
 
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(@NotNull MultipartFile file) {
         //file name as UUID + extension
         String newName = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
 
@@ -43,7 +43,7 @@ public class FileLoader {
         return newName;
     }
 
-    public void deleteFile(String fileName) {
+    public void deleteFile(@NotNull String fileName) {
         try {
             Files.deleteIfExists(Paths.get(uploadDirectory, fileName));
         } catch (IOException e) {
