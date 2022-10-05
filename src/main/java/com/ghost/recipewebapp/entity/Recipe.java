@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.*;
@@ -24,6 +25,9 @@ public class Recipe {
     // image name
     @Column(name = "image")
     private String image;
+
+    @Transient
+    private MultipartFile imageMultipart;
 
     @Column(name = "title")
     private String title;

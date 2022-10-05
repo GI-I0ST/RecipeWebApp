@@ -3,6 +3,8 @@ package com.ghost.recipewebapp.controller;
 import com.ghost.recipewebapp.dto.RecipeDto;
 import com.ghost.recipewebapp.dto.RecipeFullDto;
 import com.ghost.recipewebapp.dto.RecipeSearch;
+import com.ghost.recipewebapp.entity.Recipe;
+import com.ghost.recipewebapp.modelMapper.RecipeMapper;
 import com.ghost.recipewebapp.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +26,14 @@ import java.util.stream.IntStream;
 public class RecipeController {
     private final RecipeService recipeService;
     private final String uploadedImagesDir;
+    private final RecipeMapper recipeMapper;
 
     @Autowired
     public RecipeController(RecipeService recipeService,
-                            @Value("${uploads.image-dir-mame}") String uploadedImagesDir) {
+                            @Value("${uploads.image-dir-mame}") String uploadedImagesDir, RecipeMapper recipeMapper) {
         this.recipeService = recipeService;
         this.uploadedImagesDir = uploadedImagesDir;
+        this.recipeMapper = recipeMapper;
     }
 
     private List<Integer> calculatePageNumbers(Page<?> page, int currentPage) {
@@ -59,7 +63,9 @@ public class RecipeController {
         int currentPage = recipeSearch.getCurrentPageOrDefault();
         int pageSize = recipeSearch.getPageSizeOrDefault();
 
-        Page<RecipeDto> recipePage = recipeService.getRecipesPage(recipeSearch);
+        Page<RecipeDto> recipePage = recipeService.getRecipesPage(recipeSearch)
+                .map(recipeMapper::toShortDto);
+
         int totalPages = recipePage.getTotalPages();
 
         if (currentPage > totalPages) {
@@ -86,9 +92,11 @@ public class RecipeController {
 
     @GetMapping("/{id}")
     public String getRecipeById(@PathVariable Long id, Model model) {
-        RecipeFullDto recipe = recipeService.getRecipeById(id);
-        model.addAttribute("recipe", recipe);
+        Recipe recipe = recipeService.getRecipeById(id);
+        RecipeFullDto recipeDto = recipeMapper.toFullDto(recipe);
+        model.addAttribute("recipe", recipeDto);
         model.addAttribute("recipeSearch", new RecipeSearch());
+
         return "recipes/recipePage";
     }
 
@@ -100,33 +108,36 @@ public class RecipeController {
     }
 
     @PostMapping(value = "/new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String addNewRecipe(@Valid @ModelAttribute("recipe") RecipeFullDto newRecipe, BindingResult bindingResult, Model model) {
+    public String addNewRecipe(@Valid @ModelAttribute("recipe") RecipeFullDto newRecipeDto, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
             model.addAttribute("recipeSearch", new RecipeSearch());
             return "recipes/recipeForm";
         }
 
-        Long id = recipeService.addNewRecipe(newRecipe);
+        Long id = recipeService.addNewRecipe(recipeMapper.toEntity(newRecipeDto));
         return "redirect:/recipes/" + id;
     }
 
     @GetMapping("/{id}/edit")
     public String getRecipeEditForm(@PathVariable Long id, Model model) {
-        RecipeFullDto recipe = recipeService.getRecipeById(id);
-        model.addAttribute("recipe", recipe);
+        Recipe recipe = recipeService.getRecipeById(id);
+
+        RecipeFullDto recipeDto = recipeMapper.toFullDto(recipe);
+        model.addAttribute("recipe", recipeDto);
         model.addAttribute("recipeSearch", new RecipeSearch());
 
         return "recipes/recipeForm";
     }
 
     @PutMapping("/{id}")
-    public String editRecipe(@PathVariable Long id, @Valid @ModelAttribute("recipe") RecipeFullDto newRecipe, BindingResult bindingResult, Model model) {
+    public String editRecipe(@PathVariable Long id, @Valid @ModelAttribute("recipe") RecipeFullDto newRecipeDto, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorForm", true);
             return "recipes/recipeForm";
         }
-        newRecipe.setId(id);
+        newRecipeDto.setId(id);
+        Recipe newRecipe = recipeMapper.toEntity(newRecipeDto);
         recipeService.editRecipe(newRecipe);
         return "redirect:/recipes/" + id;
     }
