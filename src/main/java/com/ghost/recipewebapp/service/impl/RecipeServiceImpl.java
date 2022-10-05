@@ -3,6 +3,7 @@ package com.ghost.recipewebapp.service.impl;
 import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.entity.Step;
 import com.ghost.recipewebapp.entity.User;
+import com.ghost.recipewebapp.entity.UserDetailsImpl;
 import com.ghost.recipewebapp.modelMapper.RecipeMapper;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
@@ -108,6 +109,13 @@ public class RecipeServiceImpl implements RecipeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Recipe with id " + newRecipe.getId() + " not found"));
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+        // if not owner
+        if (!foundRecipe.getAuthor().equals(currentUser)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can edit recipe");
+        }
+
         // edit image
         uploadImage(newRecipe.getImageMultipart())
                 .ifPresentOrElse((imgName) -> {
@@ -141,6 +149,14 @@ public class RecipeServiceImpl implements RecipeService {
     public void deleteRecipeById(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+        // if not owner or not admin
+        if (!recipe.getAuthor().equals(currentUser)
+                && authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner or admin can delete recipe");
+        }
 
         deleteImage(recipe.getImage());
         recipe.getStepsList().forEach(step -> deleteImage(step.getImage()));
