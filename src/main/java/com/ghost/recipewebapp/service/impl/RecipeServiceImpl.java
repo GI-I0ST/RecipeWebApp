@@ -7,9 +7,9 @@ import com.ghost.recipewebapp.entity.UserDetailsImpl;
 import com.ghost.recipewebapp.exception.RecipeNotFoundException;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
-import com.ghost.recipewebapp.repository.UserRepository;
 import com.ghost.recipewebapp.repository.specification.RecipeSpecifications;
 import com.ghost.recipewebapp.service.RecipeService;
+import com.ghost.recipewebapp.service.UserService;
 import com.ghost.recipewebapp.util.FileLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,16 +32,16 @@ import java.util.Optional;
 @Service
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final FileLoader fileLoader;
 
     @Autowired
     public RecipeServiceImpl(RecipeRepository recipeRepository,
-                             UserRepository userRepository,
+                             UserService userService,
                              @Value("${uploads.image-dir-mame}") String uploadsImageDir,
                              @Value("${uploads.static-dir}") String uploadsDir) {
         this.recipeRepository = recipeRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.fileLoader = new FileLoader(Path.of(uploadsDir, uploadsImageDir));
     }
 
@@ -165,8 +165,8 @@ public class RecipeServiceImpl implements RecipeService {
 
         //get authenticated email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email" + email + "not found"));
+        User user = userService.findUserByEmail(email);
+
         recipe.addToLikedUsers(user);
 
         recipeRepository.save(recipe);
@@ -178,8 +178,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         //get authenticated email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email" + email + "not found"));
+        User user = userService.findUserByEmail(email);
 
         recipe.removeFromLikedUsers(user);
 

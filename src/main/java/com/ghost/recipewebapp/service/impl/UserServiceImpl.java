@@ -2,13 +2,12 @@ package com.ghost.recipewebapp.service.impl;
 
 import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.exception.UserAlreadyExistException;
+import com.ghost.recipewebapp.exception.UserNotFoundException;
 import com.ghost.recipewebapp.repository.UserRepository;
 import com.ghost.recipewebapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -22,9 +21,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(User newUser) throws UserAlreadyExistException{
+    public void saveUser(User newUser) {
         if (userRepository.findByEmail(newUser.getEmail()).isPresent()) {
-            throw new UserAlreadyExistException("User with email" + newUser.getEmail() + "is already exists");
+            throw new UserAlreadyExistException("User with email " + newUser.getEmail() + " is already exists");
         }
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
@@ -33,7 +32,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
     }
 }
