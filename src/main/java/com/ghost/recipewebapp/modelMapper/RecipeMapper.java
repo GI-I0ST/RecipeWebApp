@@ -57,7 +57,6 @@ public class RecipeMapper {
                 .addMappings(mapper -> mapper.skip(Recipe::setAuthor))
                 .addMappings(mapper -> mapper.skip(Recipe::setLikedUsers))
                 .addMappings(
-                        // that should be simplified.
                         new PropertyMap<RecipeFullDto, Recipe>() {
                             @Override
                             protected void configure() {
