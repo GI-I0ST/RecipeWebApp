@@ -18,7 +18,7 @@ public class FileLoader {
 
     public final String uploadDirectory;
 
-    public FileLoader(@NotNull Path path) {
+    public FileLoader(@NotNull Path path) throws FileLoaderException {
         Path absolutePath = path.normalize().toAbsolutePath();
         // if path exists and is directory
         if (!Files.isDirectory(absolutePath)) {
@@ -28,7 +28,7 @@ public class FileLoader {
         uploadDirectory = absolutePath.toString();
     }
 
-    public String uploadFile(@NotNull MultipartFile file) {
+    public String uploadFile(@NotNull MultipartFile file) throws FileLoaderException {
         //file name as UUID + extension
         String newName = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
 
@@ -38,16 +38,19 @@ public class FileLoader {
             file.transferTo(transferFile);
         } catch (IOException e) {
             throw new FileLoaderException("File " + file.getOriginalFilename() + " failed while uploading", e);
+        } catch (IllegalStateException e) {
+            throw new FileLoaderException("File " + file.getOriginalFilename() + " is not available", e);
         }
 
         return newName;
     }
 
-    public void deleteFile(@NotNull String fileName) {
+    public void deleteFile(@NotNull String fileName) throws FileLoaderException {
+        Path path = Paths.get(uploadDirectory, fileName);
         try {
-            Files.deleteIfExists(Paths.get(uploadDirectory, fileName));
+            Files.deleteIfExists(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new FileLoaderException("File " + path + " failed while deleting", e);
         }
     }
 }
