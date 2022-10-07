@@ -1,6 +1,7 @@
 package com.ghost.recipewebapp.util;
 
 import com.ghost.recipewebapp.exception.FileLoaderException;
+import com.ghost.recipewebapp.exception.FileLoaderIOException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +17,17 @@ import java.util.UUID;
 @Validated
 public class FileLoader {
 
+    /**
+     * Path of directory for usage
+     */
     public final String uploadDirectory;
 
-    public FileLoader(@NotNull Path path) throws FileLoaderException {
+
+    /**
+     * @param path path of directory for usage
+     * @throws FileLoaderException when path is not found or not a directory
+     */
+    public FileLoader(@NotNull Path path) {
         Path absolutePath = path.normalize().toAbsolutePath();
         // if path exists and is directory
         if (!Files.isDirectory(absolutePath)) {
@@ -28,7 +37,15 @@ public class FileLoader {
         uploadDirectory = absolutePath.toString();
     }
 
-    public String uploadFile(@NotNull MultipartFile file) throws FileLoaderException {
+    /**
+     * Uploads multipart to specified directory {@link #uploadDirectory}
+     *
+     * @param file multipart that should be uploaded
+     * @return new name of uploaded file
+     * @throws FileLoaderIOException in case of reading or writing errors
+     * @throws IllegalStateException see {@link MultipartFile#transferTo(File)}
+     */
+    public String uploadFile(@NotNull MultipartFile file) {
         //file name as UUID + extension
         String newName = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
 
@@ -37,20 +54,25 @@ public class FileLoader {
             File transferFile = new File(uploadDirectory, newName);
             file.transferTo(transferFile);
         } catch (IOException e) {
-            throw new FileLoaderException("File " + file.getOriginalFilename() + " failed while uploading", e);
-        } catch (IllegalStateException e) {
-            throw new FileLoaderException("File " + file.getOriginalFilename() + " is not available", e);
+            throw new FileLoaderIOException("File " + file.getOriginalFilename() + " failed while uploading", e);
         }
 
         return newName;
     }
 
-    public void deleteFile(@NotNull String fileName) throws FileLoaderException {
+    /**
+     * Deletes file from specified directory {@link #uploadDirectory}
+     *
+     * @param fileName name of file with extension
+     * @throws FileLoaderIOException in case of reading or writing errors
+     * @throws SecurityException     see {@link Files#deleteIfExists(Path)}
+     */
+    public void deleteFile(@NotNull String fileName) {
         Path path = Paths.get(uploadDirectory, fileName);
         try {
             Files.deleteIfExists(path);
         } catch (IOException e) {
-            throw new FileLoaderException("File " + path + " failed while deleting", e);
+            throw new FileLoaderIOException("File " + path + " failed while deleting", e);
         }
     }
 }
