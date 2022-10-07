@@ -4,7 +4,6 @@ import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.entity.Step;
 import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.entity.UserDetailsImpl;
-import com.ghost.recipewebapp.modelMapper.RecipeMapper;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.repository.UserRepository;
@@ -39,8 +38,7 @@ public class RecipeServiceImpl implements RecipeService {
     public RecipeServiceImpl(RecipeRepository recipeRepository,
                              UserRepository userRepository,
                              @Value("${uploads.image-dir-mame}") String uploadsImageDir,
-                             @Value("${uploads.static-dir}") String uploadsDir,
-                             RecipeMapper recipeMapper) {
+                             @Value("${uploads.static-dir}") String uploadsDir) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
         this.fileLoader = new FileLoader(Path.of(uploadsDir, uploadsImageDir));
