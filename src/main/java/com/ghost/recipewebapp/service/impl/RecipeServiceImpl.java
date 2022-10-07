@@ -4,6 +4,7 @@ import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.entity.Step;
 import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.entity.UserDetailsImpl;
+import com.ghost.recipewebapp.exception.RecipeNotFoundException;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.repository.UserRepository;
@@ -97,15 +98,12 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public Recipe getRecipeById(Long id) {
         return recipeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Recipe with id " + id + " not found"));
+                .orElseThrow(() -> new RecipeNotFoundException("Recipe with id " + id + " not found"));
     }
 
     @Override
     public void editRecipe(Recipe newRecipe) {
-        Recipe foundRecipe = recipeRepository.findById(newRecipe.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Recipe with id " + newRecipe.getId() + " not found"));
+        Recipe foundRecipe = this.getRecipeById(newRecipe.getId());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
@@ -145,8 +143,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public void deleteRecipeById(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Recipe recipe = this.getRecipeById(id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
@@ -164,8 +161,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public void addToFavourites(Long recipeId) {
-        Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe with id" + recipeId + "not found"));
+        Recipe recipe = this.getRecipeById(recipeId);
 
         //get authenticated email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -178,8 +174,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public void removeFromFavourites(Long recipeId) {
-        Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe with id" + recipeId + "not found"));
+        Recipe recipe = this.getRecipeById(recipeId);
 
         //get authenticated email from SecurityContextHolder
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
