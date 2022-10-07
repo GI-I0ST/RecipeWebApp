@@ -3,6 +3,7 @@ package com.ghost.recipewebapp.controller;
 import com.ghost.recipewebapp.dto.NewUserDto;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.entity.User;
+import com.ghost.recipewebapp.modelMapper.UserMapper;
 import com.ghost.recipewebapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -21,10 +22,12 @@ import java.util.Optional;
 @Controller
 public class AuthController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     private boolean checkUserAuth() {
@@ -81,7 +84,8 @@ public class AuthController {
             return "auth/register";
         }
 
-        userService.saveUser(newUserDto);
+        User user = userMapper.toEntity(newUserDto);
+        userService.saveUser(user);
         return "redirect:/login";
     }
 }

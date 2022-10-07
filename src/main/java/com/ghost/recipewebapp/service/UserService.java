@@ -7,7 +7,7 @@ import com.ghost.recipewebapp.entity.User;
 import java.util.Optional;
 
 public interface UserService {
-    void saveUser(NewUserDto newUserDto);
+    void saveUser(User newUser);
 
     Optional<User> findUserByEmail(String email);
 }
