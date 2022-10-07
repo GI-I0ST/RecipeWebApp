@@ -4,6 +4,7 @@ import com.ghost.recipewebapp.entity.Recipe;
 import com.ghost.recipewebapp.entity.Step;
 import com.ghost.recipewebapp.entity.User;
 import com.ghost.recipewebapp.entity.UserDetailsImpl;
+import com.ghost.recipewebapp.exception.AccessDeniedException;
 import com.ghost.recipewebapp.exception.RecipeNotFoundException;
 import com.ghost.recipewebapp.repository.RecipeRepository;
 import com.ghost.recipewebapp.dto.RecipeSearch;
@@ -17,13 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -109,7 +108,9 @@ public class RecipeServiceImpl implements RecipeService {
         User currentUser = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
         // if not owner
         if (!foundRecipe.getAuthor().equals(currentUser)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can edit recipe");
+            throw new AccessDeniedException("Access denied to recipe with id "
+                    + newRecipe.getId()
+                    + ". Only owner can edit recipe");
         }
 
         // edit image
@@ -150,7 +151,9 @@ public class RecipeServiceImpl implements RecipeService {
         // if not owner or not admin
         if (!recipe.getAuthor().equals(currentUser)
                 && authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner or admin can delete recipe");
+            throw new AccessDeniedException("Access denied to recipe with id "
+                    + id
+                    + ". Only owner or admin can delete recipe");
         }
 
         deleteImage(recipe.getImage());

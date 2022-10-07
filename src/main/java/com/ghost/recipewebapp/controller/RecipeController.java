@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -145,7 +145,9 @@ public class RecipeController {
         User currentUser = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
         // if not owner
         if (!recipe.getAuthor().equals(currentUser)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can edit recipe");
+            throw new AccessDeniedException("Access denied to recipe with id "
+                    + id
+                    + ". Only owner can edit recipe");
         }
 
         RecipeFullDto recipeDto = recipeMapper.toFullDto(recipe);
