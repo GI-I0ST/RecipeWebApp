@@ -3,6 +3,7 @@ package com.ghost.recipewebapp.controller;
 import com.ghost.recipewebapp.dto.NewUserDto;
 import com.ghost.recipewebapp.dto.RecipeSearch;
 import com.ghost.recipewebapp.entity.User;
+import com.ghost.recipewebapp.exception.UserAlreadyExistException;
 import com.ghost.recipewebapp.modelMapper.UserMapper;
 import com.ghost.recipewebapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @Controller
 public class AuthController {
@@ -71,21 +71,22 @@ public class AuthController {
             return "redirect:/recipes";
         }
 
-        Optional<User> existingUser = userService.findUserByEmail(newUserDto.getEmail());
-
-        if (existingUser.isPresent()) {
-            result.rejectValue("email", null,
-                    "There is already an account registered with the same email");
-        }
-
         if (result.hasErrors()) {
             model.addAttribute("errorForm", true);
             model.addAttribute("recipeSearch", new RecipeSearch());
             return "auth/register";
         }
 
-        User user = userMapper.toEntity(newUserDto);
-        userService.saveUser(user);
+        try {
+            User user = userMapper.toEntity(newUserDto);
+            userService.saveUser(user);
+        } catch (UserAlreadyExistException ex) {
+            result.rejectValue("email", null, ex.getMessage());
+            model.addAttribute("errorForm", true);
+            model.addAttribute("recipeSearch", new RecipeSearch());
+            return "auth/register";
+        }
+
         return "redirect:/login";
     }
 }
