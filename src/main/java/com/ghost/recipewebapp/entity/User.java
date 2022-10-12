@@ -11,7 +11,6 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -32,8 +31,16 @@ public class User {
     @Column(name = "authorities")
     private String authorities;
 
+    @Column(name = "enabled")
+    private boolean enabled;
+
     @ManyToMany(mappedBy = "likedUsers", fetch = FetchType.LAZY)
     private Set<Recipe> favouriteRecipes = new HashSet<>();
+
+    public User() {
+        super();
+        this.enabled = false;
+    }
 
     public void addToFavouriteRecipes(Recipe recipe) {
         this.favouriteRecipes.add(recipe);
